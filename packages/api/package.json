@@ -1,0 +1,19 @@
+{
+  "name": "@repo/api",
+  "version": "0.0.0",
+  "private": true,
+  "exports": {
+    ".": "./types/index.ts"
+  },
+  "devDependencies": {
+    "@repo/api": "*",
+    "@repo/typescript-config": "*",
+    "@turbo/gen": "^1.10.12",
+    "@types/node": "^20.5.2",
+    "eslint": "^8.53.0",
+    "typescript": "^5.2.2"
+  },
+  "dependencies": {
+    "axios": "^1.6.3"
+  }
+}
