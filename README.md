@@ -1,81 +1,38 @@
-# Turborepo starter
+# LangChain-POC
 
-This is an official starter Turborepo.
+This is a proof of concept for dynamically load LLM models, sources, and vectorStores for LangChain with a web user interface.
 
-## Using this example
+## Structure
 
-Run the following command:
+The project is divided into three parts: LangChain handler, web interface and a api server.
 
-```sh
-npx create-turbo@latest
-```
+### LangChain handler
 
-## What's inside?
+The LangChain handler is a nodejs packages that is responsible for dynamically loading / unloading sources and agents and executing them. It is the key component of the project.
 
-This Turborepo includes the following packages/apps:
+### Web interface
 
-### Apps and Packages
+The web interface is a Next.js application that is responsible for providing a user interface for the LangChain handler. It is also responsible for providing a way to upload sources or settings.
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+### API server
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+The API server is a nodejs application that is responsible for providing a way for the web interface to communicate with the LangChain handler. It is also responsible for interacting with the LangChain handler and database.
 
-### Utilities
+## Development
 
-This Turborepo has some additional tools already setup for you:
+- [ ] LangChain Packages
+  - [x] Handler for LLM models
+  - [x] Handler for Databases
+  - [x] Handler for Documents
+  - [ ] Handler for VectorStores
+  - [ ] Handler for TextSplitters
+  - [ ] Handler for Memory (Chat History)
+  - [ ] Builder for Runnable / RunnableChain
+- [ ] Web Interface
+  - [ ] TBD
+- [ ] API Server
+  - [ ] TBD
 
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
+## Installation
 
-### Build
-
-To build all apps and packages, run the following command:
-
-```
-cd my-turborepo
-pnpm build
-```
-
-### Develop
-
-To develop all apps and packages, run the following command:
-
-```
-cd my-turborepo
-pnpm dev
-```
-
-### Remote Caching
-
-Turborepo can use a technique known as [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup), then enter the following commands:
-
-```
-cd my-turborepo
-npx turbo login
-```
-
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-```
-npx turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turbo.build/repo/docs/core-concepts/monorepos/running-tasks)
-- [Caching](https://turbo.build/repo/docs/core-concepts/caching)
-- [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching)
-- [Filtering](https://turbo.build/repo/docs/core-concepts/monorepos/filtering)
-- [Configuration Options](https://turbo.build/repo/docs/reference/configuration)
-- [CLI Usage](https://turbo.build/repo/docs/reference/command-line-reference)
+A docker-compose file will be provided to run the project. It will start the LangChain handler, web interface and api server, as well as a database using postgresql. The docker-compose file will be customizable to allow for different configurations.
