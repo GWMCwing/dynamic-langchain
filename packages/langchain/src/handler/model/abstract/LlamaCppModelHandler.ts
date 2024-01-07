@@ -14,11 +14,18 @@ export abstract class LlamaCppModelHandler<
   TH extends TemplateHandler<any>,
 > extends ModelHandler<Concrete<GenerationSettings>, LlamaCpp, TH> {
   //
-  constructor(modelPath: string, templateHandler: TH) {
-    const model = new LlamaCpp({
-      modelPath,
-      maxConcurrency: 1,
-    });
+  constructor(model: LlamaCpp, templateHandler: TH);
+  constructor(modelPath: string, templateHandler: TH);
+  constructor(modelOrPath: string | LlamaCpp, templateHandler: TH) {
+    const model =
+      typeof modelOrPath === "string"
+        ? new LlamaCpp({
+            modelPath: modelOrPath,
+            maxConcurrency: 1,
+            f16Kv: true,
+            verbose: true,
+          })
+        : modelOrPath;
     super(model, templateHandler);
   }
 

@@ -6,6 +6,15 @@ import type {
   PromptTemplate,
 } from "@langchain/core/prompts";
 
+export type ModelHandlerClass<
+  GenerationSetting extends Record<string, number | string>,
+  M extends BaseLanguageModel,
+  TH extends TemplateHandler<any>,
+> = new (
+  model: M,
+  templateHandler: TH,
+) => ModelHandler<GenerationSetting, M, TH>;
+
 // prompt Template should be the base template of the model, do not include any modification
 export abstract class ModelHandler<
   GenerationSetting extends Record<string, number | string>,

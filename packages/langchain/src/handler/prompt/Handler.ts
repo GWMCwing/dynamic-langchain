@@ -1,6 +1,9 @@
-import type { ParamsFromFString } from "@langchain/core/prompts";
-import { ChatPromptTemplate, PromptTemplate } from "langchain/prompts";
+import { PromptTemplate } from "langchain/prompts";
 import type { PlaceHolder, PlaceHolderQueue } from "../../types/placeHolder";
+
+export type TemplateHandlerClass<Template extends string> = new (
+  template: Template,
+) => TemplateHandler<Template>;
 
 export abstract class TemplateHandler<Template extends string> {
   constructor(template: Template) {
