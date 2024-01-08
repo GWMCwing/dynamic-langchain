@@ -1,13 +1,10 @@
-import { TemplateHandler } from "./Handler";
 import type { PlaceHolder } from "../../types/placeHolder";
+import { TemplateHandler } from "./Handler";
 
-const template = `<|system|>
-{system_message}</s>
-<|user|>
-{prompt}</s>
-<|assistant|>` as const;
+const template =
+  `<s>[INST] System Message: {system_message}\n\n{prompt} [/INST]` as const;
 
-export class ZephyrTemplateHandler extends TemplateHandler<typeof template> {
+export class MistralTemplateHandler extends TemplateHandler<typeof template> {
   constructor() {
     super(template);
   }
@@ -21,7 +18,7 @@ export class ZephyrTemplateHandler extends TemplateHandler<typeof template> {
   }
   //
   protected applyResponsePrefix(template: string, prefix: string): string {
-    return template.replace("<|assistant|>", `<|assistant|> ${prefix}`);
+    return template.replace("[/INST]", `[/INST] ${prefix}`);
   }
   //
   protected applyContextPlaceHolder(

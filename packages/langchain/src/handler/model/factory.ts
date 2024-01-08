@@ -1,56 +1,108 @@
-import type { BaseLanguageModel } from "langchain/base_language";
-import type { TemplateHandler, TemplateHandlerClass } from "../prompt/Handler";
+import type { BaseLanguageModel } from "@langchain/core/language_models/base";
+import type {
+  Template,
+  TemplateHandler,
+  TemplateHandlerClass,
+} from "../prompt/Handler";
 import type { ModelHandlerClass } from "./abstract/ModelHandler";
+import type { Embeddings } from "@langchain/core/embeddings";
 
-const AllowedModelName = ["tinyllama"] as const;
+const AllowedModelName = ["tinyllama", "mistral"] as const;
 
 type AllowedModelName = (typeof AllowedModelName)[number];
 
-type ModelSettings<
+export type ModelSettings<
   GenerationSetting extends Record<string, number | string>,
   M extends BaseLanguageModel,
-  T extends string,
+  E extends Embeddings,
+  T extends Template,
 > = {
   name: AllowedModelName;
 } & (
   | {
       onlyOneInstance: true;
-      instance: InstanceType<
-        ModelHandlerClass<GenerationSetting, M, TemplateHandler<T>>
+      instance?: InstanceType<
+        ModelHandlerClass<GenerationSetting, M, E, TemplateHandler<T>>
       >;
-      HandlerClass: never;
+      getInstance: () => InstanceType<
+        ModelHandlerClass<GenerationSetting, M, E, TemplateHandler<T>>
+      >;
+      HandlerClass?: undefined;
     }
   | {
       onlyOneInstance: false;
-      instance: never;
+      instance?: undefined;
+      getInstance?: undefined;
       HandlerClass: () => InstanceType<
-        ModelHandlerClass<GenerationSetting, M, TemplateHandler<T>>
+        ModelHandlerClass<GenerationSetting, M, E, TemplateHandler<T>>
       >;
     }
 );
 
-export class ModelFactory {
-  static registerModel<
+export class ModelHandlerFactory {
+  static registerModelHandler<
     GenerationSetting extends Record<string, number | string>,
     M extends BaseLanguageModel,
-    T extends string,
-  >(settings: ModelSettings<GenerationSetting, M, T>) {
-    if (this.modelSettingMap[settings.name])
+    E extends Embeddings,
+    T extends Template,
+  >(settings: ModelSettings<GenerationSetting, M, E, T>) {
+    if (ModelHandlerFactory.modelSettingMap[settings.name])
       throw new Error(`Model ${settings.name} already registered`);
-    this.modelSettingMap[settings.name] = settings;
+    ModelHandlerFactory.modelSettingMap[settings.name] = settings;
   }
 
-  static getModel(
+  static getModelHandler(
     name: AllowedModelName,
-  ): InstanceType<ModelHandlerClass<any, any, any>> {
-    const modelSetting = this.modelSettingMap[name];
+  ): InstanceType<
+    ModelHandlerClass<
+      Record<string, string | number>,
+      BaseLanguageModel,
+      Embeddings,
+      TemplateHandler<any>
+    >
+  > {
+    const modelSetting = ModelHandlerFactory.modelSettingMap[name];
     if (!modelSetting) throw new Error(`Model ${name} not registered`);
-    if (modelSetting.onlyOneInstance) return modelSetting.instance;
+    if (modelSetting.onlyOneInstance) {
+      if (!modelSetting.instance) {
+        modelSetting.instance = modelSetting.getInstance();
+      }
+      return modelSetting.instance;
+    }
     const modelHandler = modelSetting.HandlerClass();
     return modelHandler;
   }
 
+  static unload(name: AllowedModelName): void {
+    ModelHandlerFactory.unloadEmbeddingModel(name);
+    ModelHandlerFactory.unloadModel(name);
+  }
+
+  static unloadEmbeddingModel(name: AllowedModelName): void {
+    const modelSetting = ModelHandlerFactory.modelSettingMap[name];
+    if (!modelSetting) throw new Error(`Model ${name} not registered`);
+    if (modelSetting.onlyOneInstance) {
+      modelSetting.instance?.unloadEmbeddingModel();
+    }
+  }
+
+  static unloadModel(name: AllowedModelName): void {
+    const modelSetting = ModelHandlerFactory.modelSettingMap[name];
+    if (!modelSetting) throw new Error(`Model ${name} not registered`);
+    if (modelSetting.onlyOneInstance) {
+      modelSetting.instance?.unloadModel();
+    }
+  }
+
   protected static modelSettingMap: Partial<
-    Record<AllowedModelName, ModelSettings<any, any, any>>
-  >;
+    Record<
+      AllowedModelName,
+      ModelSettings<
+        Record<string, string | number>,
+        BaseLanguageModel,
+        Embeddings,
+        Template
+      >
+    >
+  > = {};
 }

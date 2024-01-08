@@ -1,7 +1,8 @@
-import { LlamaCpp } from "langchain/llms/llama_cpp";
-import type { TemplateHandler } from "../../prompt/Handler";
+import { LlamaCpp } from "@langchain/community/llms/llama_cpp";
+import { TemplateHandler } from "../../prompt/Handler";
 import { ModelHandler } from "./ModelHandler";
 import type { Concrete } from "../../../types/utility";
+import { LlamaCppEmbeddings } from "langchain/embeddings/llama_cpp";
 
 export type GenerationSettings = {
   maxToken: LlamaCpp["maxTokens"];
@@ -12,30 +13,70 @@ export type GenerationSettings = {
 
 export abstract class LlamaCppModelHandler<
   TH extends TemplateHandler<any>,
-> extends ModelHandler<Concrete<GenerationSettings>, LlamaCpp, TH> {
+> extends ModelHandler<
+  Concrete<GenerationSettings>,
+  LlamaCpp,
+  LlamaCppEmbeddings,
+  TH
+> {
   //
-  constructor(model: LlamaCpp, templateHandler: TH);
-  constructor(modelPath: string, templateHandler: TH);
-  constructor(modelOrPath: string | LlamaCpp, templateHandler: TH) {
-    const model =
-      typeof modelOrPath === "string"
+  constructor(
+    modelOrPath: string | LlamaCpp,
+    embeddingModelOrPath: string | LlamaCppEmbeddings,
+    contextSize: number,
+    templateHandler: TH,
+  ) {
+    super(templateHandler);
+    this.modelOrPath = modelOrPath;
+    this.embeddingModelOrPath = embeddingModelOrPath;
+    this.contextSize = contextSize;
+  }
+
+  private modelOrPath: string | LlamaCpp;
+  private embeddingModelOrPath: string | LlamaCppEmbeddings;
+  private contextSize: number;
+
+  loadModel(): LlamaCpp {
+    if (this.model) return this.model;
+    this.model =
+      typeof this.modelOrPath === "string"
         ? new LlamaCpp({
-            modelPath: modelOrPath,
+            modelPath: this.modelOrPath,
             maxConcurrency: 1,
+            contextSize: this.contextSize,
+            batchSize: this.contextSize,
             f16Kv: true,
             verbose: true,
           })
-        : modelOrPath;
-    super(model, templateHandler);
+        : this.modelOrPath;
+    return this.model;
+  }
+
+  loadEmbeddingModel(): LlamaCppEmbeddings {
+    if (this.embeddingModel) return this.embeddingModel;
+    this.embeddingModel =
+      typeof this.embeddingModelOrPath === "string"
+        ? new LlamaCppEmbeddings({
+            modelPath: this.embeddingModelOrPath,
+            maxConcurrency: 1,
+            contextSize: this.contextSize,
+            batchSize: this.contextSize,
+            f16Kv: true,
+          })
+        : this.embeddingModelOrPath;
+    return this.embeddingModel;
   }
 
   setGenerationSettings(settings: Partial<Concrete<GenerationSettings>>): this {
-    if (settings.maxToken !== undefined)
-      this.model.maxTokens = settings.maxToken;
+    let model = this.model;
+    if (!model) {
+      model = this.loadModel();
+    }
+    if (settings.maxToken !== undefined) model.maxTokens = settings.maxToken;
     if (settings.temperature !== undefined)
-      this.model.temperature = settings.temperature;
-    if (settings.topP !== undefined) this.model.topP = settings.topP;
-    if (settings.topK !== undefined) this.model.topK = settings.topK;
+      model.temperature = settings.temperature;
+    if (settings.topP !== undefined) model.topP = settings.topP;
+    if (settings.topK !== undefined) model.topK = settings.topK;
     return this;
   }
 }

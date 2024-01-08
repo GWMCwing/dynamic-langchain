@@ -1,39 +1,22 @@
 import { ChatLlamaCpp } from "langchain/chat_models/llama_cpp";
-import { join as pathJoin } from "path";
-import { env } from "./requiredEnv";
 import { StringOutputParser } from "@langchain/core/output_parsers";
 import { RunnableSequence } from "langchain/runnables";
 import { RunnablePassthrough } from "langchain/schema/runnable";
-import { LlamaCppEmbeddings } from "langchain/embeddings/llama_cpp";
 import { MemoryVectorStore } from "langchain/vectorstores/memory";
 import { Document } from "langchain/document";
-// import { ZephyrTemplateHandler } from "./handler/prompt/Zephyr";
 import { LlamaCpp } from "langchain/llms/llama_cpp";
 import { ZephyrTemplateHandler } from "./handler/prompt/Zephyr";
 import type { VectorStore } from "@langchain/core/vectorstores";
+import { ModelFactory } from "./handler/model";
 
-const llamaPath = pathJoin(import.meta.dir, `../models/${env.MODEL_PATH}`);
-const llamaEmbeddingPath = pathJoin(
-  import.meta.dir,
-  `../models/${env.EMBEDDING_MODEL_PATH}`,
-);
-
-const model = new LlamaCpp({
-  modelPath: llamaPath,
-  gpuLayers: 0,
-  maxConcurrency: 1,
-  verbose: true,
-});
-
-const embeddings = new LlamaCppEmbeddings({
-  modelPath: llamaPath,
-  embedding: true,
-});
+const modelHandler = ModelFactory.getModelHandler("mistral");
+const model = modelHandler.getModel();
+const embeddingModel = modelHandler.getEmbeddingModel();
 
 const vectorStore = await MemoryVectorStore.fromTexts(
   ["your name is John"],
   [{}],
-  embeddings,
+  embeddingModel,
 );
 
 await vectorStore.addDocuments([
@@ -56,10 +39,11 @@ const retriever = vectorStore.asRetriever({
   k: 2,
 });
 
-const promptTemplate = new ZephyrTemplateHandler()
+const promptTemplate = modelHandler
+  .getTemplateHandler()
   .setContextPrefix("System Context:\n")
-  .addContextPlaceHolder("", {})
-  .setResponsePrefix("Response:\n")
+  .setPromptPrefix("Question:\n")
+  .setResponsePrefix("You:")
   .buildTemplate();
 
 const outputParser = new StringOutputParser();
@@ -100,24 +84,7 @@ If you do not know the answer to a question, you must say "I don't know".`;
 
 const message = "Are you Amy?";
 
-type GenerationSettings = {
-  maxToken: ChatLlamaCpp["maxTokens"];
-  temperature: ChatLlamaCpp["temperature"];
-  topP: ChatLlamaCpp["topP"];
-  topK: ChatLlamaCpp["topK"];
-};
-
-function setGenerationSettings(
-  model: ChatLlamaCpp | LlamaCpp,
-  settings: Partial<GenerationSettings>,
-) {
-  if (settings.maxToken !== undefined) model.maxTokens = settings.maxToken;
-  if (settings.temperature !== undefined)
-    model.temperature = settings.temperature;
-  if (settings.topP !== undefined) model.topP = settings.topP;
-  if (settings.topK !== undefined) model.topK = settings.topK;
-}
-setGenerationSettings(model, {
+modelHandler.setGenerationSettings({
   temperature: 0.98,
   topP: 0.37,
   topK: 100,

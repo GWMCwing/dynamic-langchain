@@ -178,3 +178,5 @@ dist
 # exclude txt from gitignore
 models/*
 !models/*.txt
+
+src/local_test

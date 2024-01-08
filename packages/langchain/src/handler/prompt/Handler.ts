@@ -1,12 +1,13 @@
-import { PromptTemplate } from "langchain/prompts";
+import { PromptTemplate } from "@langchain/core/prompts";
 import type { PlaceHolder, PlaceHolderQueue } from "../../types/placeHolder";
 
-export type TemplateHandlerClass<Template extends string> = new (
-  template: Template,
-) => TemplateHandler<Template>;
+export type Template = `${string}{system_message}${string}{prompt}${string}`;
+export type TemplateHandlerClass<T extends Template> = new (
+  template: T,
+) => TemplateHandler<T>;
 
-export abstract class TemplateHandler<Template extends string> {
-  constructor(template: Template) {
+export abstract class TemplateHandler<T extends Template> {
+  constructor(template: T) {
     this.baseTemplate = template;
   }
   addContextPlaceHolder(
@@ -19,6 +20,10 @@ export abstract class TemplateHandler<Template extends string> {
       placeHolderSuffix: "",
       ...placeHolderDefinition,
     });
+    return this;
+  }
+  setPromptPrefix(prefix: string): this {
+    this.promptPrefix = prefix;
     return this;
   }
   setResponsePrefix(prefix: string): this {
@@ -42,6 +47,7 @@ export abstract class TemplateHandler<Template extends string> {
     ] of contextPlaceHolderQueue) {
       template = this.applyContextPlaceHolder(template, placeHolderDefinition);
     }
+    template = this.applyPromptPrefix(template, this.promptPrefix);
     template = this.applyResponsePrefix(template, responsePrefix);
     //
     return PromptTemplate.fromTemplate(template);
@@ -59,9 +65,14 @@ export abstract class TemplateHandler<Template extends string> {
     template: string,
     placeHolderDefinition: PlaceHolder,
   ): string;
+  protected abstract applyPromptPrefix(
+    template: string,
+    prefix: string,
+  ): string;
   //
-  protected baseTemplate: Template;
+  protected baseTemplate: T;
   protected contextPlaceHolderQueue: PlaceHolderQueue = new Map();
+  protected promptPrefix: string = "";
   protected contextPrefix: string = "";
   protected responsePrefix: string = "";
 }
