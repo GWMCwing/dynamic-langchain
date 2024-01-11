@@ -75,7 +75,7 @@ class LangChainSchema {
         },
       });
       const contentEmbeddingTruncated =
-        embeddingModel.contentLength < QA.question.length;
+        embeddingModel.contentLength < QA.question.length + QA.response.length;
       //
       const embeddingRow = await this.insertEmbedding(
         embedding.embedding,
