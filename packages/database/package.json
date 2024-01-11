@@ -1,0 +1,25 @@
+{
+  "name": "@repo/database",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "exports": {
+    ".": {
+      "import": "./src/index.ts"
+    }
+  },
+  "scripts": {
+    "db:generate": "prisma generate"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.7.1",
+    "pgvector": "^0.1.7",
+    "prisma": "^5.7.1"
+  }
+}

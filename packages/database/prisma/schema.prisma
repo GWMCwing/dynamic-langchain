@@ -1,0 +1,201 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions", "views", "multiSchema"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  schemas    = ["users", "chat", "langchain", "extensions"]
+  extensions = [pgvector(map: "vector", schema: "extensions")] // Add the pgvector extension
+}
+
+model User {
+  id          String        @id @default(dbgenerated("uuid_generate_v4()"))
+  // 
+  deviceId    String        @unique @map("device_id")
+  // 
+  createdAt   DateTime      @default(now()) @map("created_at") @db.Timestamp()
+  updatedAt   DateTime      @updatedAt @map("updated_at") @db.Timestamp()
+  // 
+  ChatSession ChatSession[]
+  Document    Document[]
+
+  // 
+  @@index([deviceId], name: "idx_device_id")
+  // 
+  @@map("user")
+  @@schema("users")
+}
+
+model ChatSession {
+  id                String              @id @default(dbgenerated("uuid_generate_v4()"))
+  // 
+  createdAt         DateTime            @default(now()) @map("created_at") @db.Timestamp()
+  updatedAt         DateTime            @updatedAt @map("updated_at") @db.Timestamp()
+  // 
+  User              User                @relation(fields: [userId], references: [id])
+  userId            String              @map("user_id")
+  // 
+  ChatSessionConfig ChatSessionConfig[]
+  Memory            Memory[]
+
+  // 
+  @@index([userId], name: "idx_user_id")
+  @@index([createdAt(sort: Desc)], name: "idx_created_at")
+  // 
+  @@map("session")
+  @@schema("chat")
+}
+
+model ChatSessionConfig {
+  id                String          @id @default(dbgenerated("uuid_generate_v4()"))
+  // 
+  config            Json            @default("{}") @db.Json
+  // 
+  createdAt         DateTime        @default(now()) @map("created_at") @db.Timestamp()
+  updatedAt         DateTime        @updatedAt @map("updated_at") @db.Timestamp()
+  // 
+  Session           ChatSession     @relation(fields: [chatSessionId], references: [id])
+  GenerationModel   GenerationModel @relation(fields: [generationModelId], references: [id])
+  chatSessionId     String          @unique @map("session_id")
+  generationModelId String          @map("generation_model_id")
+
+  // 
+  @@index([chatSessionId], name: "idx_session_id")
+  // 
+  @@map("session_config")
+  @@schema("chat")
+}
+
+enum DocumentLanguage {
+  cpp
+  go
+  java
+  js
+  php
+  proto
+  python
+  rst
+  ruby
+  rust
+  scala
+  swift
+  markdown
+  latex
+  html
+
+  @@map("document_language")
+  @@schema("langchain")
+}
+
+model Document {
+  id                        String            @id @default(dbgenerated("uuid_generate_v4()"))
+  // 
+  name                      String
+  localLocation             String            @map("local_location")
+  content                   String
+  contentEmbeddingTruncated Boolean?          @map("content_embedding_truncated")
+  // 
+  metadata                  Json              @default("{}") @db.Json
+  language                  DocumentLanguage?
+  global                    Boolean           @default(false)
+  // 
+  createdAt                 DateTime          @default(now()) @map("created_at") @db.Timestamp()
+  updatedAt                 DateTime          @updatedAt @map("updated_at") @db.Timestamp()
+  // 
+  User                      User              @relation(fields: [userId], references: [id])
+  Embedding                 Embedding?        @relation(fields: [embeddingId], references: [id])
+  userId                    String            @map("user_id")
+  embeddingId               String?           @map("embedding_id")
+
+  // 
+  @@unique([userId, name, embeddingId], name: "unique_user_name_embedding_id")
+  // 
+  @@index([userId], name: "idx_user_id")
+  @@index([global], name: "idx_global")
+  // 
+  @@map("document")
+  @@schema("langchain")
+}
+
+model Embedding {
+  id                String                @id @default(dbgenerated("uuid_generate_v4()"))
+  // 
+  embedding         Unsupported("vector") @map("embedding")
+  lossyRawEmbedding Float[]               @map("lossy_raw_embedding") @db.DoublePrecision
+  // 
+  createdAt         DateTime              @default(now()) @map("created_at") @db.Timestamp()
+  updatedAt         DateTime              @updatedAt @map("updated_at") @db.Timestamp()
+  // 
+  EmbeddingModel    EmbeddingModel        @relation(fields: [embeddingModelId], references: [id])
+  embeddingModelId  String                @map("embedding_model_id")
+  // 
+  Memory            Memory[]
+  Document          Document[]
+
+  // 
+  @@map("embedding")
+  @@schema("langchain")
+}
+
+model Memory {
+  id                        String      @id @default(dbgenerated("uuid_generate_v4()"))
+  // 
+  question                  String
+  response                  String
+  contentEmbeddingTruncated Boolean?    @map("content_embedding_truncated")
+  // 
+  createdAt                 DateTime    @default(now()) @map("created_at") @db.Timestamp()
+  updatedAt                 DateTime    @updatedAt @map("updated_at") @db.Timestamp()
+  // 
+  ChatSession               ChatSession @relation(fields: [chatSessionId], references: [id])
+  Embedding                 Embedding?  @relation(fields: [embeddingId], references: [id])
+  chatSessionId             String      @map("session_id")
+  embeddingId               String?     @map("embedding_id")
+
+  // 
+  @@index([chatSessionId], name: "idx_session_id")
+  @@index([chatSessionId, createdAt(sort: Desc)], name: "idx_session_id_created_at")
+  // 
+  @@map("memory")
+  @@schema("langchain")
+}
+
+model EmbeddingModel {
+  id            String      @id @default(dbgenerated("uuid_generate_v4()"))
+  // 
+  name          String
+  contentLength Int
+  dimension     Int
+  active        Boolean
+  // 
+  createdAt     DateTime    @default(now()) @map("created_at") @db.Timestamp()
+  updatedAt     DateTime    @updatedAt @map("updated_at") @db.Timestamp()
+  // 
+  Embedding     Embedding[]
+
+  // 
+  @@index([name], name: "idx_embedding_model_name")
+  // 
+  @@map("embedding_model")
+  @@schema("langchain")
+}
+
+model GenerationModel {
+  id                String              @id @default(dbgenerated("uuid_generate_v4()"))
+  // 
+  name              String
+  active            Boolean
+  // 
+  createdAt         DateTime            @default(now()) @map("created_at") @db.Timestamp()
+  updatedAt         DateTime            @updatedAt @map("updated_at") @db.Timestamp()
+  // 
+  ChatSessionConfig ChatSessionConfig[]
+
+  // 
+  @@index([name], name: "idx_generation_model_name")
+  // 
+  @@map("generation_model")
+  @@schema("langchain")
+}
