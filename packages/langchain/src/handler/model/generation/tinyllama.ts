@@ -1,6 +1,6 @@
-import { env } from "../../requiredEnv";
+import { env } from "../../../requiredEnv";
 import { LlamaCppModelHandler } from "./abstract/LlamaCppModelHandler";
-import { ZephyrTemplateHandler } from "../prompt/Zephyr";
+import { ZephyrTemplateHandler } from "../../prompt/Zephyr";
 import { join as pathJoin } from "path";
 import type { LlamaCpp } from "langchain/llms/llama_cpp";
 import type { LlamaCppEmbeddings } from "langchain/embeddings/llama_cpp";

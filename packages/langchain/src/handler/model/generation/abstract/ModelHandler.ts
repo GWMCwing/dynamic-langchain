@@ -1,9 +1,5 @@
 import type { BaseLanguageModel } from "@langchain/core/language_models/base";
-import { TemplateHandler } from "../../prompt/Handler";
-import type {
-  ParamsFromFString,
-  PromptTemplate,
-} from "@langchain/core/prompts";
+import { TemplateHandler } from "../../../prompt/Handler";
 import type { Runnable } from "@langchain/core/runnables";
 import type { Embeddings } from "@langchain/core/embeddings";
 

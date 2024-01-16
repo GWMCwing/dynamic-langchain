@@ -1,11 +1,7 @@
 import type { BaseLanguageModel } from "@langchain/core/language_models/base";
-import type {
-  Template,
-  TemplateHandler,
-  TemplateHandlerClass,
-} from "../prompt/Handler";
+import type { Template, TemplateHandler } from "../../prompt/Handler";
 import type { ModelHandlerClass } from "./abstract/ModelHandler";
-import type { Embeddings } from "@langchain/core/embeddings";
+import type { LlamaCppEmbeddings } from "langchain/embeddings/llama_cpp";
 
 const AllowedModelName = ["tinyllama", "mistral"] as const;
 
@@ -14,7 +10,7 @@ type AllowedModelName = (typeof AllowedModelName)[number];
 export type ModelSettings<
   GenerationSetting extends Record<string, number | string>,
   M extends BaseLanguageModel,
-  E extends Embeddings,
+  E extends LlamaCppEmbeddings,
   T extends Template,
 > = {
   name: AllowedModelName;
@@ -43,7 +39,7 @@ export class ModelHandlerFactory {
   static registerModelHandler<
     GenerationSetting extends Record<string, number | string>,
     M extends BaseLanguageModel,
-    E extends Embeddings,
+    E extends LlamaCppEmbeddings,
     T extends Template,
   >(settings: ModelSettings<GenerationSetting, M, E, T>) {
     if (ModelHandlerFactory.modelSettingMap[settings.name])
@@ -57,7 +53,7 @@ export class ModelHandlerFactory {
     ModelHandlerClass<
       Record<string, string | number>,
       BaseLanguageModel,
-      Embeddings,
+      LlamaCppEmbeddings,
       TemplateHandler<any>
     >
   > {
@@ -74,16 +70,7 @@ export class ModelHandlerFactory {
   }
 
   static unload(name: AllowedModelName): void {
-    ModelHandlerFactory.unloadEmbeddingModel(name);
     ModelHandlerFactory.unloadModel(name);
-  }
-
-  static unloadEmbeddingModel(name: AllowedModelName): void {
-    const modelSetting = ModelHandlerFactory.modelSettingMap[name];
-    if (!modelSetting) throw new Error(`Model ${name} not registered`);
-    if (modelSetting.onlyOneInstance) {
-      modelSetting.instance?.unloadEmbeddingModel();
-    }
   }
 
   static unloadModel(name: AllowedModelName): void {
@@ -100,7 +87,7 @@ export class ModelHandlerFactory {
       ModelSettings<
         Record<string, string | number>,
         BaseLanguageModel,
-        Embeddings,
+        LlamaCppEmbeddings,
         Template
       >
     >

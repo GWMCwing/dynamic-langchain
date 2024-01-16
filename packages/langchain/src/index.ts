@@ -7,7 +7,7 @@ import { Document } from "langchain/document";
 import { LlamaCpp } from "langchain/llms/llama_cpp";
 import { ZephyrTemplateHandler } from "./handler/prompt/Zephyr";
 import type { VectorStore } from "@langchain/core/vectorstores";
-import { ModelFactory } from "./handler/model";
+import { ModelFactory } from "./handler/model/generation";
 
 const modelHandler = ModelFactory.getModelHandler("mistral");
 const model = modelHandler.getModel();

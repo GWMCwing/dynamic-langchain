@@ -1,5 +1,5 @@
 {
-  "name": "@repo/langchain",
+  "name": "langchain_local",
   "version": "0.0.0",
   "private": true,
   "exports": {
@@ -7,11 +7,12 @@
   },
   "devDependencies": {
     "@types/bun": "latest",
-    "@repo/database": "*",
+    "database": "*",
     "typescript": "^5.2.2"
   },
   "dependencies": {
     "@langchain/core": "^0.1.6",
+    "@xenova/transformers": "^2.14.0",
     "d3-dsv": "2",
     "dotenv": "^16.3.1",
     "langchain": "^0.0.213",
