@@ -1,5 +1,5 @@
 import { LlamaCpp } from "@langchain/community/llms/llama_cpp";
-import { TemplateHandler } from "../../../prompt/Handler";
+import { TemplateHandler, type Template } from "../../../prompt/Handler";
 import { ModelHandler } from "./ModelHandler";
 import type { Concrete } from "../../../../types/utility";
 import { LlamaCppEmbeddings } from "langchain/embeddings/llama_cpp";
@@ -12,7 +12,7 @@ export type GenerationSettings = {
 };
 
 export abstract class LlamaCppModelHandler<
-  TH extends TemplateHandler<any>,
+  TH extends TemplateHandler<Template>,
 > extends ModelHandler<
   Concrete<GenerationSettings>,
   LlamaCpp,

@@ -4,11 +4,9 @@ import { MistralTemplateHandler } from "../../prompt/Mistral";
 import { join as pathJoin } from "path";
 import type { LlamaCpp } from "langchain/llms/llama_cpp";
 import type { LlamaCppEmbeddings } from "langchain/embeddings/llama_cpp";
+import { ModelsDir } from "../modelDir";
 
-const llamaPath = pathJoin(
-  import.meta.dir,
-  `../../../models/${env.MODEL_PATH_MISTRAL}`,
-);
+const llamaPath = pathJoin(ModelsDir, "generation", env.MODEL_PATH_MISTRAL);
 
 export class MistralHandler extends LlamaCppModelHandler<MistralTemplateHandler> {
   constructor();

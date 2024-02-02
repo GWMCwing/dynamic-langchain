@@ -1,6 +1,7 @@
 generator client {
   provider        = "prisma-client-js"
   previewFeatures = ["postgresqlExtensions", "views", "multiSchema"]
+  engineType      = "binary"
 }
 
 datasource db {
@@ -11,36 +12,40 @@ datasource db {
 }
 
 model User {
-  id          String        @id @default(dbgenerated("uuid_generate_v4()"))
+  id           String        @id @default(dbgenerated("gen_random_uuid()"))
   // 
-  deviceId    String        @unique @map("device_id")
+  name         String        @unique
+  passwordHash String        @map("password_hash")
+  salt         String
   // 
-  createdAt   DateTime      @default(now()) @map("created_at") @db.Timestamp()
-  updatedAt   DateTime      @updatedAt @map("updated_at") @db.Timestamp()
+  createdAt    DateTime      @default(now()) @map("created_at") @db.Timestamp()
+  updatedAt    DateTime      @default(now()) @updatedAt @map("updated_at") @db.Timestamp()
   // 
-  ChatSession ChatSession[]
-  Document    Document[]
+  ChatSession  ChatSession[]
+  Document     Document[]
 
-  // 
-  @@index([deviceId], name: "idx_device_id")
   // 
   @@map("user")
   @@schema("users")
 }
 
 model ChatSession {
-  id                String              @id @default(dbgenerated("uuid_generate_v4()"))
+  id                String             @id @default(dbgenerated("gen_random_uuid()"))
   // 
-  createdAt         DateTime            @default(now()) @map("created_at") @db.Timestamp()
-  updatedAt         DateTime            @updatedAt @map("updated_at") @db.Timestamp()
+  name              String
   // 
-  User              User                @relation(fields: [userId], references: [id])
-  userId            String              @map("user_id")
+  createdAt         DateTime           @default(now()) @map("created_at") @db.Timestamp()
+  updatedAt         DateTime           @default(now()) @updatedAt @map("updated_at") @db.Timestamp()
   // 
-  ChatSessionConfig ChatSessionConfig[]
+  User              User               @relation(fields: [userId], references: [id])
+  userId            String             @map("user_id")
+  // 
+  ChatSessionConfig ChatSessionConfig?
   Memory            Memory[]
+  SessionDocument   SessionDocument[]
 
   // 
+  @@unique([userId, name], name: "unique_user_name")
   @@index([userId], name: "idx_user_id")
   @@index([createdAt(sort: Desc)], name: "idx_created_at")
   // 
@@ -49,12 +54,12 @@ model ChatSession {
 }
 
 model ChatSessionConfig {
-  id                String          @id @default(dbgenerated("uuid_generate_v4()"))
+  id                String          @id @default(dbgenerated("gen_random_uuid()"))
   // 
-  config            Json            @default("{}") @db.Json
+  config            Json            @default("{}") @db.JsonB
   // 
   createdAt         DateTime        @default(now()) @map("created_at") @db.Timestamp()
-  updatedAt         DateTime        @updatedAt @map("updated_at") @db.Timestamp()
+  updatedAt         DateTime        @default(now()) @updatedAt @map("updated_at") @db.Timestamp()
   // 
   Session           ChatSession     @relation(fields: [chatSessionId], references: [id])
   GenerationModel   GenerationModel @relation(fields: [generationModelId], references: [id])
@@ -65,6 +70,24 @@ model ChatSessionConfig {
   @@index([chatSessionId], name: "idx_session_id")
   // 
   @@map("session_config")
+  @@schema("chat")
+}
+
+model SessionDocument {
+  documentId    String      @map("document_id")
+  chatSessionId String      @map("session_id")
+  Document      Document    @relation(fields: [documentId], references: [id])
+  ChatSession   ChatSession @relation(fields: [chatSessionId], references: [id])
+
+  // 
+  @@id([documentId, chatSessionId])
+  // 
+  @@unique([documentId, chatSessionId], name: "unique_session_document_document_session_id")
+  // 
+  @@index([chatSessionId], name: "idx_session_document_session_id")
+  @@index([documentId], name: "idx_session_document_document_id")
+  // 
+  @@map("session_document")
   @@schema("chat")
 }
 
@@ -90,27 +113,27 @@ enum DocumentLanguage {
 }
 
 model Document {
-  id                        String            @id @default(dbgenerated("uuid_generate_v4()"))
+  id                        String              @id @default(dbgenerated("gen_random_uuid()"))
   // 
   name                      String
-  localLocation             String            @map("local_location")
+  localLocation             String              @map("local_location")
   content                   String
-  contentEmbeddingTruncated Boolean?          @map("content_embedding_truncated")
+  contentEmbeddingTruncated Boolean?            @map("content_embedding_truncated")
   // 
-  metadata                  Json              @default("{}") @db.Json
+  metadata                  Json                @default("{}") @db.Json
   language                  DocumentLanguage?
-  global                    Boolean           @default(false)
+  global                    Boolean             @default(false)
   // 
-  createdAt                 DateTime          @default(now()) @map("created_at") @db.Timestamp()
-  updatedAt                 DateTime          @updatedAt @map("updated_at") @db.Timestamp()
+  createdAt                 DateTime            @default(now()) @map("created_at") @db.Timestamp()
+  updatedAt                 DateTime            @default(now()) @updatedAt @map("updated_at") @db.Timestamp()
   // 
-  User                      User              @relation(fields: [userId], references: [id])
-  Embedding                 Embedding?        @relation(fields: [embeddingId], references: [id])
-  userId                    String            @map("user_id")
-  embeddingId               String?           @map("embedding_id")
+  User                      User                @relation(fields: [userId], references: [id])
+  DocumentEmbedding         DocumentEmbedding[]
+  userId                    String              @map("user_id")
+  SessionDocument           SessionDocument[]
 
   // 
-  @@unique([userId, name, embeddingId], name: "unique_user_name_embedding_id")
+  @@unique([userId, name], name: "unique_user_name")
   // 
   @@index([userId], name: "idx_user_id")
   @@index([global], name: "idx_global")
@@ -119,20 +142,48 @@ model Document {
   @@schema("langchain")
 }
 
+model DocumentEmbedding {
+  Document    Document  @relation(fields: [documentId], references: [id])
+  documentId  String    @map("document_id")
+  Embedding   Embedding @relation(fields: [embeddingId], references: [id])
+  embeddingId String    @map("embedding_id")
+
+  // 
+  @@id([documentId, embeddingId])
+  // 
+  @@unique([documentId, embeddingId], name: "unique_document_embedding_document_embedding_id")
+  @@index([documentId], name: "idx_document_embedding_document_id")
+  @@map("document_embedding")
+  @@schema("langchain")
+}
+
+model MemoryEmbedding {
+  Memory      Memory    @relation(fields: [memoryId], references: [id])
+  memoryId    String    @map("memory_id")
+  Embedding   Embedding @relation(fields: [embeddingId], references: [id])
+  embeddingId String    @map("embedding_id")
+
+  // 
+  @@id([memoryId, embeddingId])
+  // 
+  @@unique([memoryId, embeddingId], name: "unique_memory_embedding_memory_embedding_id")
+  @@index([memoryId], name: "idx_memory_embedding_memory_id")
+  @@map("memory_embedding")
+  @@schema("langchain")
+}
+
 model Embedding {
-  id                String                @id @default(dbgenerated("uuid_generate_v4()"))
+  id                String              @id @default(dbgenerated("gen_random_uuid()"))
   // 
-  embedding         Unsupported("vector") @map("embedding")
-  lossyRawEmbedding Float[]               @map("lossy_raw_embedding") @db.DoublePrecision
+  embedding         Float[]             @map("embedding") @db.DoublePrecision
   // 
-  createdAt         DateTime              @default(now()) @map("created_at") @db.Timestamp()
-  updatedAt         DateTime              @updatedAt @map("updated_at") @db.Timestamp()
+  createdAt         DateTime            @default(now()) @map("created_at") @db.Timestamp()
+  updatedAt         DateTime            @default(now()) @updatedAt @map("updated_at") @db.Timestamp()
   // 
-  EmbeddingModel    EmbeddingModel        @relation(fields: [embeddingModelId], references: [id])
-  embeddingModelId  String                @map("embedding_model_id")
-  // 
-  Memory            Memory[]
-  Document          Document[]
+  EmbeddingModel    EmbeddingModel      @relation(fields: [embeddingModelId], references: [id])
+  embeddingModelId  String              @map("embedding_model_id")
+  DocuemntEmbedding DocumentEmbedding[]
+  MemoryEmbedding   MemoryEmbedding[]
 
   // 
   @@map("embedding")
@@ -140,19 +191,18 @@ model Embedding {
 }
 
 model Memory {
-  id                        String      @id @default(dbgenerated("uuid_generate_v4()"))
+  id                        String            @id @default(dbgenerated("gen_random_uuid()"))
   // 
   question                  String
   response                  String
-  contentEmbeddingTruncated Boolean?    @map("content_embedding_truncated")
+  contentEmbeddingTruncated Boolean?          @map("content_embedding_truncated")
   // 
-  createdAt                 DateTime    @default(now()) @map("created_at") @db.Timestamp()
-  updatedAt                 DateTime    @updatedAt @map("updated_at") @db.Timestamp()
+  createdAt                 DateTime          @default(now()) @map("created_at") @db.Timestamp()
+  updatedAt                 DateTime          @default(now()) @updatedAt @map("updated_at") @db.Timestamp()
   // 
-  ChatSession               ChatSession @relation(fields: [chatSessionId], references: [id])
-  Embedding                 Embedding?  @relation(fields: [embeddingId], references: [id])
-  chatSessionId             String      @map("session_id")
-  embeddingId               String?     @map("embedding_id")
+  ChatSession               ChatSession       @relation(fields: [chatSessionId], references: [id])
+  chatSessionId             String            @unique @map("session_id")
+  MemoryEmbedding           MemoryEmbedding[]
 
   // 
   @@index([chatSessionId], name: "idx_session_id")
@@ -163,15 +213,15 @@ model Memory {
 }
 
 model EmbeddingModel {
-  id            String      @id @default(dbgenerated("uuid_generate_v4()"))
+  id            String      @id @default(dbgenerated("gen_random_uuid()"))
   // 
-  name          String
+  name          String      @unique
   contentLength Int
   dimension     Int
   active        Boolean
   // 
   createdAt     DateTime    @default(now()) @map("created_at") @db.Timestamp()
-  updatedAt     DateTime    @updatedAt @map("updated_at") @db.Timestamp()
+  updatedAt     DateTime    @default(now()) @updatedAt @map("updated_at") @db.Timestamp()
   // 
   Embedding     Embedding[]
 
@@ -183,13 +233,13 @@ model EmbeddingModel {
 }
 
 model GenerationModel {
-  id                String              @id @default(dbgenerated("uuid_generate_v4()"))
+  id                String              @id @default(dbgenerated("gen_random_uuid()"))
   // 
-  name              String
+  name              String              @unique
   active            Boolean
   // 
   createdAt         DateTime            @default(now()) @map("created_at") @db.Timestamp()
-  updatedAt         DateTime            @updatedAt @map("updated_at") @db.Timestamp()
+  updatedAt         DateTime            @default(now()) @updatedAt @map("updated_at") @db.Timestamp()
   // 
   ChatSessionConfig ChatSessionConfig[]
 

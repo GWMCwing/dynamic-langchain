@@ -1,5 +1,5 @@
 import type { BaseLanguageModel } from "@langchain/core/language_models/base";
-import { TemplateHandler } from "../../../prompt/Handler";
+import { TemplateHandler, type Template } from "../../../prompt/Handler";
 import type { Runnable } from "@langchain/core/runnables";
 import type { Embeddings } from "@langchain/core/embeddings";
 
@@ -7,7 +7,7 @@ export type ModelHandlerClass<
   GenerationSetting extends Record<string, number | string>,
   M extends BaseLanguageModel,
   E extends Embeddings,
-  TH extends TemplateHandler<any>,
+  TH extends TemplateHandler<Template>,
 > = new (
   model: M,
   templateHandler: TH,
@@ -18,14 +18,14 @@ export abstract class ModelHandler<
   GenerationSetting extends Record<string, number | string>,
   M extends BaseLanguageModel,
   E extends Embeddings,
-  TH extends TemplateHandler<any>,
+  TH extends TemplateHandler<Template>,
 > {
   constructor(templateHandler: TH) {
     this.templateHandler = templateHandler;
   }
 
   getModelRunnable(): Runnable {
-    if (!this.model) this.model = this.loadModel();
+    if (!this.model) this.model = this.getModel();
     return this.model.bind({
       stop: this.stopTokens,
     });
@@ -44,12 +44,15 @@ export abstract class ModelHandler<
     return this.embeddingModel;
   }
   //
-  abstract loadModel(): M;
-  abstract loadEmbeddingModel(): E;
-  unloadModel() {
+  protected abstract loadModel(): M;
+  protected abstract loadEmbeddingModel(): E;
+  protected unloadModel() {
     this.model = undefined;
   }
-  unloadEmbeddingModel() {
+  unsafe_forceUnloadModel() {
+    this.model = undefined;
+  }
+  unsafe_forceUnloadEmbeddingModel() {
     this.embeddingModel = undefined;
   }
 

@@ -15,6 +15,7 @@ if (env.MODEL_PATH_TINY_LLAMA) {
     name: "tinyllama",
     onlyOneInstance: true,
     getInstance: () => new TinyLlamaHandler(),
+    referenceCount: 0,
   });
 }
 
@@ -24,6 +25,7 @@ if (env.MODEL_PATH_MISTRAL) {
     name: "mistral",
     onlyOneInstance: true,
     getInstance: () => new MistralHandler(),
+    referenceCount: 0,
   });
 }
 
@@ -34,5 +36,10 @@ if (!generationModelSet) {
 //
 //
 
-export { ModelHandlerFactory as ModelFactory };
+export async function getGenerationModelFactory() {
+  if (!ModelHandlerFactory.ready) await ModelHandlerFactory.init();
+  return ModelHandlerFactory;
+}
+
+// export { ModelHandlerFactory as ModelFactory };
 export type { ModelSettings };

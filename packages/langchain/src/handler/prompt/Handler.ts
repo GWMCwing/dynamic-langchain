@@ -35,7 +35,7 @@ export abstract class TemplateHandler<T extends Template> {
     return this;
   }
   buildTemplate() {
-    let template: string = this.baseTemplate;
+    let template: T = this.baseTemplate;
     const contextPlaceHolderQueue = this.contextPlaceHolderQueue;
     const responsePrefix = this.responsePrefix;
     //
@@ -53,22 +53,13 @@ export abstract class TemplateHandler<T extends Template> {
     return PromptTemplate.fromTemplate(template);
   }
   //
-  protected abstract applyContextPrefix(
-    template: string,
-    prefix: string,
-  ): string;
-  protected abstract applyResponsePrefix(
-    template: string,
-    prefix: string,
-  ): string;
+  protected abstract applyContextPrefix(template: T, prefix: string): T;
+  protected abstract applyResponsePrefix(template: T, prefix: string): T;
   protected abstract applyContextPlaceHolder(
-    template: string,
+    template: T,
     placeHolderDefinition: PlaceHolder,
-  ): string;
-  protected abstract applyPromptPrefix(
-    template: string,
-    prefix: string,
-  ): string;
+  ): T;
+  protected abstract applyPromptPrefix(template: T, prefix: string): T;
   //
   protected baseTemplate: T;
   protected contextPlaceHolderQueue: PlaceHolderQueue = new Map();

@@ -4,11 +4,9 @@ import { ZephyrTemplateHandler } from "../../prompt/Zephyr";
 import { join as pathJoin } from "path";
 import type { LlamaCpp } from "langchain/llms/llama_cpp";
 import type { LlamaCppEmbeddings } from "langchain/embeddings/llama_cpp";
+import { ModelsDir } from "../modelDir";
 
-const llamaPath = pathJoin(
-  import.meta.dir,
-  `../../../models/${env.MODEL_PATH_TINY_LLAMA}`,
-);
+const llamaPath = pathJoin(ModelsDir, "generation", env.MODEL_PATH_TINY_LLAMA);
 
 export class TinyLlamaHandler extends LlamaCppModelHandler<ZephyrTemplateHandler> {
   constructor();

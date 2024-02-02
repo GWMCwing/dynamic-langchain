@@ -5,17 +5,30 @@
   "scripts": {
     "build": "tsc",
     "start": "node index.js",
-    "dev": "nodemon index.ts"
+    "dev": "bun ./src/index.ts"
   },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "@langchain/core": "^0.1.6"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
   },
   "dependencies": {
-    "api-types": "*",
+    "@types/cookie-parser": "^1.4.6",
+    "@types/morgan": "^1.9.9",
+    "api-types": "workspace:*",
+    "body-parser": "^1.20.2",
+    "cookie-parser": "^1.4.6",
+    "database": "workspace:*",
+    "langchain_local": "workspace:*",
     "dotenv": "^16.3.1",
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "jose": "^5.2.0",
+    "morgan": "^1.10.0",
+    "valibot": "^0.26.0"
+  },
+  "overrides": {
+    "@langchain/core": "0.1.6"
   }
 }

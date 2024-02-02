@@ -2,10 +2,26 @@ import type { BaseLanguageModel } from "@langchain/core/language_models/base";
 import type { Template, TemplateHandler } from "../../prompt/Handler";
 import type { ModelHandlerClass } from "./abstract/ModelHandler";
 import type { LlamaCppEmbeddings } from "langchain/embeddings/llama_cpp";
+import { getDatabase } from "database";
 
 const AllowedModelName = ["tinyllama", "mistral"] as const;
 
-type AllowedModelName = (typeof AllowedModelName)[number];
+export type AllowedModelName = (typeof AllowedModelName)[number];
+
+export type ModelFactoryResource<
+  GenerationSetting extends Record<string, number | string> = Record<
+    string,
+    number | string
+  >,
+  M extends BaseLanguageModel = BaseLanguageModel,
+  E extends LlamaCppEmbeddings = LlamaCppEmbeddings,
+  T extends Template = Template,
+> = {
+  resource: InstanceType<
+    ModelHandlerClass<GenerationSetting, M, E, TemplateHandler<T>>
+  >;
+  [Symbol.dispose](): void;
+};
 
 export type ModelSettings<
   GenerationSetting extends Record<string, number | string>,
@@ -17,6 +33,7 @@ export type ModelSettings<
 } & (
   | {
       onlyOneInstance: true;
+      referenceCount: number;
       instance?: InstanceType<
         ModelHandlerClass<GenerationSetting, M, E, TemplateHandler<T>>
       >;
@@ -36,6 +53,28 @@ export type ModelSettings<
 );
 
 export class ModelHandlerFactory {
+  static ready = false;
+  static async init() {
+    // add all registered models to db
+    //
+    const db = await getDatabase();
+    await db.langChain.model.disableAllEmbeddingModels();
+    await db.langChain.model.disableAllGenerationModels();
+    //
+    const promiseList: ReturnType<
+      typeof db.langChain.model.addOrActivateGenerationModel
+    >[] = [];
+    //
+    for (const [name, modelSetting] of Object.entries(
+      ModelHandlerFactory.modelSettingMap,
+    )) {
+      promiseList.push(db.langChain.model.addOrActivateGenerationModel(name));
+    }
+    await Promise.all(promiseList);
+    //
+    ModelHandlerFactory.ready = true;
+  }
+
   static registerModelHandler<
     GenerationSetting extends Record<string, number | string>,
     M extends BaseLanguageModel,
@@ -47,39 +86,64 @@ export class ModelHandlerFactory {
     ModelHandlerFactory.modelSettingMap[settings.name] = settings;
   }
 
-  static getModelHandler(
+  static getModelHandlerFactoryResource(
     name: AllowedModelName,
-  ): InstanceType<
-    ModelHandlerClass<
-      Record<string, string | number>,
-      BaseLanguageModel,
-      LlamaCppEmbeddings,
-      TemplateHandler<any>
-    >
-  > {
+  ): ModelFactoryResource {
     const modelSetting = ModelHandlerFactory.modelSettingMap[name];
     if (!modelSetting) throw new Error(`Model ${name} not registered`);
+    //
     if (modelSetting.onlyOneInstance) {
+      modelSetting.referenceCount++;
       if (!modelSetting.instance) {
         modelSetting.instance = modelSetting.getInstance();
       }
-      return modelSetting.instance;
+      return {
+        resource: modelSetting.instance,
+        [Symbol.dispose]() {
+          modelSetting.referenceCount--;
+          ModelHandlerFactory.triggerModelHandlerResourceDispose(name);
+        },
+      };
     }
-    const modelHandler = modelSetting.HandlerClass();
-    return modelHandler;
+    //
+    return {
+      resource: modelSetting.HandlerClass(),
+      [Symbol.dispose]() {},
+    };
   }
 
-  static unload(name: AllowedModelName): void {
-    ModelHandlerFactory.unloadModel(name);
+  static hasModel(name: string): boolean {
+    return !!ModelHandlerFactory.modelSettingMap[name as AllowedModelName];
   }
 
-  static unloadModel(name: AllowedModelName): void {
+  static getModelsName(): AllowedModelName[] {
+    return Object.keys(
+      ModelHandlerFactory.modelSettingMap,
+    ) as AllowedModelName[];
+  }
+
+  static triggerModelHandlerResourceDispose(name: AllowedModelName) {
     const modelSetting = ModelHandlerFactory.modelSettingMap[name];
     if (!modelSetting) throw new Error(`Model ${name} not registered`);
     if (modelSetting.onlyOneInstance) {
-      modelSetting.instance?.unloadModel();
+      if (modelSetting.referenceCount === 0) {
+        modelSetting.instance?.unsafe_forceUnloadModel();
+        modelSetting.instance = undefined;
+      }
     }
   }
+
+  // static unload(name: AllowedModelName): void {
+  //   ModelHandlerFactory.unloadModel(name);
+  // }
+
+  // static unloadModel(name: AllowedModelName): void {
+  //   const modelSetting = ModelHandlerFactory.modelSettingMap[name];
+  //   if (!modelSetting) throw new Error(`Model ${name} not registered`);
+  //   if (modelSetting.onlyOneInstance) {
+  //     modelSetting.instance?.unloadModel();
+  //   }
+  // }
 
   protected static modelSettingMap: Partial<
     Record<
