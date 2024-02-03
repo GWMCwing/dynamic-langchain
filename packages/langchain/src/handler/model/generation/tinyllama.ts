@@ -19,7 +19,7 @@ export class TinyLlamaHandler extends LlamaCppModelHandler<ZephyrTemplateHandler
       : super(llamaPath, llamaPath, contextSize, templateHandler);
   }
 
-  readonly stopTokens: string[] = [
+  readonly stopTokens: readonly string[] = [
     "<|system|>",
     "<|user|>",
     "<|assistant|>",

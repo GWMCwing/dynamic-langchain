@@ -19,5 +19,5 @@ export class MistralHandler extends LlamaCppModelHandler<MistralTemplateHandler>
       : super(llamaPath, llamaPath, contextSize, templateHandler);
   }
 
-  readonly stopTokens: string[] = [] as const;
+  readonly stopTokens: readonly string[] = [] as const;
 }

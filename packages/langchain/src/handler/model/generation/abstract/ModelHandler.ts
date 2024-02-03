@@ -27,7 +27,7 @@ export abstract class ModelHandler<
   getModelRunnable(): Runnable {
     if (!this.model) this.model = this.getModel();
     return this.model.bind({
-      stop: this.stopTokens,
+      stop: this.stopTokens as string[],
     });
   }
 
@@ -63,5 +63,5 @@ export abstract class ModelHandler<
   protected embeddingModel?: E;
   protected templateHandler: TH;
   //
-  abstract readonly stopTokens: string[];
+  abstract readonly stopTokens: readonly string[];
 }
