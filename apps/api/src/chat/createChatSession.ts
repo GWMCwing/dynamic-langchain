@@ -1,10 +1,10 @@
 import type { Request, Response } from "express";
 import { getUser } from "../utility/request";
-import { getDatabase } from "database";
+import { getDatabase } from "@repo/database";
 import * as v from "valibot";
-import { getGenerationModelFactory } from "langchain_local";
+import { getGenerationModelFactory } from "@repo/langchain";
 
-const BodySchema = v.objectAsync({
+const BodySchemaPromise = async()=> v.objectAsync({
   name: v.string(),
   generationModelName: v.picklistAsync(
     (await getGenerationModelFactory()).getModelsName(),
@@ -18,7 +18,7 @@ export async function createChatSession_cb(req: Request, res: Response) {
   //
   const db = await getDatabase();
 
-  const result = await v.safeParseAsync(BodySchema, req.body);
+  const result = await v.safeParseAsync(await BodySchemaPromise(), req.body);
   if (!result.success) {
     console.log(result.issues);
     return res.status(400).json({

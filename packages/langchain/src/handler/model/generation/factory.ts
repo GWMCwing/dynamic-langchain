@@ -1,8 +1,8 @@
 import type { BaseLanguageModel } from "@langchain/core/language_models/base";
 import type { Template, TemplateHandler } from "../../prompt/Handler";
 import type { ModelHandlerClass } from "./abstract/ModelHandler";
-import type { LlamaCppEmbeddings } from "langchain/embeddings/llama_cpp";
-import { getDatabase } from "database";
+import { getDatabase } from "@repo/database";
+import { LlamaCppEmbeddings } from "@langchain/community/embeddings/llama_cpp";
 
 const AllowedModelName = ["tinyllama", "mistral"] as const;
 

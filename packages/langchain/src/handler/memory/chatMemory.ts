@@ -1,4 +1,4 @@
-// import { LangChainSchema } from "database";
+// import { LangChainSchema } from "@repo/database";
 
 // class ChatMemoryPrisma {
 //   constructor(schema: LangChainSchema) {

@@ -1,4 +1,4 @@
-import { getDatabase } from "database";
+import { getDatabase } from "@repo/database";
 import type { Request, Response } from "express";
 import { signJWT } from "../utility/jwt";
 import { hashPassword } from "../utility/hash";

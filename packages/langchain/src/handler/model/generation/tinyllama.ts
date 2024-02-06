@@ -2,8 +2,8 @@ import { env } from "../../../requiredEnv";
 import { LlamaCppModelHandler } from "./abstract/LlamaCppModelHandler";
 import { ZephyrTemplateHandler } from "../../prompt/Zephyr";
 import { join as pathJoin } from "path";
-import type { LlamaCpp } from "langchain/llms/llama_cpp";
-import type { LlamaCppEmbeddings } from "langchain/embeddings/llama_cpp";
+import type { LlamaCpp } from "@langchain/community/llms/llama_cpp";
+import type { LlamaCppEmbeddings } from "@langchain/community/embeddings/llama_cpp";
 import { ModelsDir } from "../modelDir";
 
 const llamaPath = pathJoin(ModelsDir, "generation", env.MODEL_PATH_TINY_LLAMA);

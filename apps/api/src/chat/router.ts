@@ -5,7 +5,7 @@ import { getChatMemory_cb } from "./getChatMemory";
 import { sendMessage_cb } from "./sendMessage";
 import { createChatSession_cb } from "./createChatSession";
 
-const router = Router();
+const router: Router = Router();
 
 router.get("/chatSessions", requireLogin_Middleware, getChatSessionList_cb);
 router.get(

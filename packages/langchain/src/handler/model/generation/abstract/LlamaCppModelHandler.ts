@@ -1,8 +1,8 @@
-import { LlamaCpp } from "@langchain/community/llms/llama_cpp";
 import { TemplateHandler, type Template } from "../../../prompt/Handler";
 import { ModelHandler } from "./ModelHandler";
 import type { Concrete } from "../../../../types/utility";
-import { LlamaCppEmbeddings } from "langchain/embeddings/llama_cpp";
+import { LlamaCpp } from "@langchain/community/llms/llama_cpp";
+import { LlamaCppEmbeddings } from "@langchain/community/embeddings/llama_cpp";
 
 export type GenerationSettings = {
   maxToken: LlamaCpp["maxTokens"];

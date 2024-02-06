@@ -1,5 +1,5 @@
+import { LlamaCppEmbeddings } from "@langchain/community/embeddings/llama_cpp";
 import { ModelHandler } from "./ModelHandler";
-import { LlamaCppEmbeddings } from "langchain/embeddings/llama_cpp";
 
 export abstract class LlamaCppModelHandler extends ModelHandler<LlamaCppEmbeddings> {
   //

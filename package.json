@@ -1,5 +1,6 @@
 {
   "name": "langchain-poc",
+  "type": "module",
   "devDependencies": {
     "@repo/eslint-config": "*",
     "@repo/typescript-config": "*",

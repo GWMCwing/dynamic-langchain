@@ -1,27 +1,28 @@
 {
   "name": "api",
   "module": "index.ts",
-  "type": "module",
   "scripts": {
-    "build": "tsc",
-    "start": "node index.js",
-    "dev": "bun ./src/index.ts"
+    "build": "tsc --build tsconfig.build.json",
+    "start": "",
+    "dev": "node ../../dist/apps/api/src/index.js"
   },
   "devDependencies": {
-    "@types/bun": "latest",
-    "@langchain/core": "^0.1.6"
+    "@langchain/core": "^0.1.6",
+    "@types/bun": "latest"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
   },
   "dependencies": {
+    "@repo/api-types": "workspace:*",
+    "@repo/database": "workspace:*",
+    "@repo/langchain": "workspace:*",
+    "@types/body-parser": "^1.19.5",
     "@types/cookie-parser": "^1.4.6",
+    "@types/express": "^4.17.21",
     "@types/morgan": "^1.9.9",
-    "api-types": "workspace:*",
     "body-parser": "^1.20.2",
     "cookie-parser": "^1.4.6",
-    "database": "workspace:*",
-    "langchain_local": "workspace:*",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "jose": "^5.2.0",
