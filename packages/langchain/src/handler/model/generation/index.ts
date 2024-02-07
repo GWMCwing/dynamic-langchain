@@ -1,7 +1,7 @@
-import { env } from "../../../requiredEnv";
-import { ModelHandlerFactory, type ModelSettings } from "./factory";
-import { MistralHandler } from "./mistral";
-import { TinyLlamaHandler } from "./tinyllama";
+import { env } from "../../../requiredEnv.js";
+import { ModelHandlerFactory } from "./factory.js";
+import { MistralHandler } from "./mistral.js";
+import { TinyLlamaHandler } from "./tinyllama.js";
 
 //
 // register
@@ -40,6 +40,3 @@ export async function getGenerationModelFactory() {
   if (!ModelHandlerFactory.ready) await ModelHandlerFactory.init();
   return ModelHandlerFactory;
 }
-
-// export { ModelHandlerFactory as ModelFactory };
-export type { ModelSettings };

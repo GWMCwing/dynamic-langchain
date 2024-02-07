@@ -1,10 +1,14 @@
 import type { Request, Response } from "express";
-import { getUser } from "../utility/request";
+import { getUser } from "../utility/request.js";
 import { getDatabase } from "@repo/database";
 import * as v from "valibot";
-import { ModelHandlerFactory, type AllowedModelName } from "@repo/langchain";
 import type { RunnableLike } from "@langchain/core/runnables";
-import { RunnableSequence, StringOutputParser } from "@repo/langchain";
+import type { AllowedModelName } from "@repo/langchain" with { "resolution-mode": "import" };
+import {
+  ModelHandlerFactory,
+  RunnableSequence,
+  StringOutputParser,
+} from "@repo/langchain";
 
 const BodySchema = v.object({
   sessionId: v.string(),

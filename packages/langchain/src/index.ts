@@ -1,6 +1,6 @@
-export * from "./handler/model/embedding/index";
-export * from "./handler/model/generation/index";
-export * from "./handler/model/generation/factory";
-export * from "./builder/chainBuilder";
+export * from "./handler/model/embedding/index.js";
+export * from "./handler/model/generation/index.js";
+export * from "./handler/model/generation/factory.js";
+export * from "./builder/chainBuilder.js";
 export { StringOutputParser } from "@langchain/core/output_parsers";
 export { RunnableSequence } from "@langchain/core/runnables";

@@ -3,13 +3,13 @@ import { RateLimiterMemory } from "rate-limiter-flexible";
 import express from "express";
 import helmet from "helmet";
 import morgan from "morgan";
-import { env } from "./requiredEnv";
-import { chatRouter } from "./chat/router";
-import { authRouter } from "./auth/router";
+import { env } from "./requiredEnv.js";
+import { chatRouter } from "./chat/router.js";
+import { authRouter } from "./auth/router.js";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
-import { langchainRouter } from "./langchain/router";
-import { statusRouter } from "./status/router";
+import { langchainRouter } from "./langchain/router.js";
+import { statusRouter } from "./status/router.js";
 
 const app = express();
 app.use(helmet());

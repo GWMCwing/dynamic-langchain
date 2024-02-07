@@ -1,5 +1,5 @@
 import type { BaseLanguageModel } from "@langchain/core/language_models/base";
-import { TemplateHandler, type Template } from "../../../prompt/Handler";
+import { TemplateHandler, type Template } from "../../../prompt/Handler.js";
 import type { Runnable } from "@langchain/core/runnables";
 import type { Embeddings } from "@langchain/core/embeddings";
 

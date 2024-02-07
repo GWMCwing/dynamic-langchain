@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { generationModelName_cb } from "./generationModel";
+import { generationModelName_cb } from "./generationModel.js";
 
 const router: Router = Router();
 

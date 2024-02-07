@@ -1,5 +1,5 @@
 import { DataSource } from "typeorm";
-import { SQLDatabaseBaseHandler } from "./abstract/DatabaseHandler";
+import { SQLDatabaseBaseHandler } from "./abstract/DatabaseHandler.js";
 
 export class PGHandler extends SQLDatabaseBaseHandler {
   constructor(

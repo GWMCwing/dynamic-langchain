@@ -1,6 +1,6 @@
 import type { ChatSessionConfig, PrismaClient } from "@prisma/client";
 import type { JsonObject } from "@prisma/client/runtime/library";
-import type { ChatSessionConfig_SubConfig } from "./subconfig";
+import type { ChatSessionConfig_SubConfig } from "./subconfig.js";
 
 export class ChatSchema_Config {
   constructor(client: PrismaClient) {

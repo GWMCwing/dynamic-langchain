@@ -1,5 +1,5 @@
 import { PDFLoader } from "langchain/document_loaders/fs/pdf";
-import { DocumentHandler } from "./abstract/DocumentHandler";
+import { DocumentHandler } from "./abstract/DocumentHandler.js";
 
 type PDFLoaderPrototype = (typeof PDFLoader)["prototype"];
 

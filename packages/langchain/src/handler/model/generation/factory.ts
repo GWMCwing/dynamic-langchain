@@ -1,6 +1,6 @@
 import type { BaseLanguageModel } from "@langchain/core/language_models/base";
-import type { Template, TemplateHandler } from "../../prompt/Handler";
-import type { ModelHandlerClass } from "./abstract/ModelHandler";
+import type { Template, TemplateHandler } from "../../prompt/Handler.js";
+import type { ModelHandlerClass } from "./abstract/ModelHandler.js";
 import { getDatabase } from "@repo/database";
 import { LlamaCppEmbeddings } from "@langchain/community/embeddings/llama_cpp";
 

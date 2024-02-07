@@ -1,5 +1,5 @@
 import { PromptTemplate } from "@langchain/core/prompts";
-import type { PlaceHolder, PlaceHolderQueue } from "../../types/placeHolder";
+import type { PlaceHolder, PlaceHolderQueue } from "../../types/placeHolder.js";
 
 export type Template = `${string}{system_message}${string}{prompt}${string}`;
 export type TemplateHandlerClass<T extends Template> = new (

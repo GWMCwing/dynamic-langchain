@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
-import { decodeJWT } from "../utility/jwt";
+import { decodeJWT } from "../utility/jwt.js";
 import * as v from "valibot";
 
 const UserSchema = v.object({

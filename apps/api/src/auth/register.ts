@@ -1,8 +1,8 @@
 import { getDatabase } from "@repo/database";
 import type { Request, Response } from "express";
-import { signJWT } from "../utility/jwt";
+import { signJWT } from "../utility/jwt.js";
 import crypto from "crypto";
-import { hashPassword } from "../utility/hash";
+import { hashPassword } from "../utility/hash.js";
 
 export async function register_cb(
   req: Request,

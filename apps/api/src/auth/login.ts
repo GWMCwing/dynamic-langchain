@@ -1,8 +1,8 @@
 import { getDatabase } from "@repo/database";
 import type { Request, Response } from "express";
-import { signJWT } from "../utility/jwt";
-import { hashPassword } from "../utility/hash";
-import type { User } from "../middleware/user";
+import { signJWT } from "../utility/jwt.js";
+import { hashPassword } from "../utility/hash.js";
+import type { User } from "../middleware/user.js";
 
 export async function login_cb(
   req: Request,

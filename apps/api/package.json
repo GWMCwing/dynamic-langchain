@@ -1,10 +1,9 @@
 {
   "name": "api",
   "module": "index.ts",
+  "type": "module",
   "scripts": {
-    "build": "tsc --build tsconfig.build.json",
-    "start": "",
-    "dev": "node ../../dist/apps/api/src/index.js"
+    "build": "tsc"
   },
   "devDependencies": {
     "@langchain/core": "^0.1.6",

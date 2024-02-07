@@ -1,5 +1,5 @@
-import { TemplateHandler } from "./Handler";
-import type { PlaceHolder } from "../../types/placeHolder";
+import { TemplateHandler } from "./Handler.js";
+import type { PlaceHolder } from "../../types/placeHolder.js";
 
 const template = `<|system|>
 {system_message}</s>

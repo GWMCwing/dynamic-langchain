@@ -1,5 +1,5 @@
 import type { Document, Embedding, Memory, PrismaClient } from "@prisma/client";
-import { LangChainSchema_Model } from "./model";
+import { LangChainSchema_Model } from "./model.js";
 
 export type EmbeddingInfo = {
   embedding: number[];

@@ -1,6 +1,6 @@
-import { TemplateHandler, type Template } from "../../../prompt/Handler";
-import { ModelHandler } from "./ModelHandler";
-import type { Concrete } from "../../../../types/utility";
+import { TemplateHandler, type Template } from "../../../prompt/Handler.js";
+import { ModelHandler } from "./ModelHandler.js";
+import type { Concrete } from "../../../../types/utility.js";
 import { LlamaCpp } from "@langchain/community/llms/llama_cpp";
 import { LlamaCppEmbeddings } from "@langchain/community/embeddings/llama_cpp";
 

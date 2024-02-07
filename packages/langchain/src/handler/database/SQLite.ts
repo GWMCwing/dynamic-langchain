@@ -1,5 +1,5 @@
 import { DataSource } from "typeorm";
-import { SQLDatabaseBaseHandler } from "./abstract/DatabaseHandler";
+import { SQLDatabaseBaseHandler } from "./abstract/DatabaseHandler.js";
 
 export class SQLliteHandler extends SQLDatabaseBaseHandler {
   constructor(databasePath: string) {

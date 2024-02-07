@@ -1,5 +1,5 @@
 import { CSVLoader } from "langchain/document_loaders/fs/csv";
-import { DocumentHandler } from "./abstract/DocumentHandler";
+import { DocumentHandler } from "./abstract/DocumentHandler.js";
 
 export type CSVLoaderOptions = (typeof CSVLoader)["prototype"]["options"];
 

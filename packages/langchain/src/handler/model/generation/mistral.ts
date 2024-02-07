@@ -1,8 +1,8 @@
-import { env } from "../../../requiredEnv";
-import { LlamaCppModelHandler } from "./abstract/LlamaCppModelHandler";
-import { MistralTemplateHandler } from "../../prompt/Mistral";
+import { env } from "../../../requiredEnv.js";
+import { LlamaCppModelHandler } from "./abstract/LlamaCppModelHandler.js";
+import { MistralTemplateHandler } from "../../prompt/Mistral.js";
+import { ModelsDir } from "../modelDir.js";
 import { join as pathJoin } from "path";
-import { ModelsDir } from "../modelDir";
 import type { LlamaCpp } from "@langchain/community/llms/llama_cpp";
 import type { LlamaCppEmbeddings } from "@langchain/community/embeddings/llama_cpp";
 

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getMemoryStatus_cb } from "./memory";
+import { getMemoryStatus_cb } from "./memory.js";
 
 const router: Router = Router();
 

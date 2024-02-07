@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { login_cb } from "./login";
-import { register_cb } from "./register";
+import { login_cb } from "./login.js";
+import { register_cb } from "./register.js";
 
 const router: Router = Router();
 

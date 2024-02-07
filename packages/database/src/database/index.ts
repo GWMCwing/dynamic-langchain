@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
-import { LangChainSchema } from "./langchain";
-import { ChatSchema } from "./chat";
-import { UserSchema } from "./user";
+import { LangChainSchema } from "./langchain/index.js";
+import { ChatSchema } from "./chat/index.js";
+import { UserSchema } from "./user.js";
 
 class Database {
   constructor() {

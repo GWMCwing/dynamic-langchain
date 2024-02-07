@@ -1,16 +1,18 @@
 import type { Request, Response } from "express";
-import { getUser } from "../utility/request";
+import { getUser } from "../utility/request.js";
 import { getDatabase } from "@repo/database";
 import * as v from "valibot";
 import { getGenerationModelFactory } from "@repo/langchain";
 
-const BodySchemaPromise = async()=> v.objectAsync({
-  name: v.string(),
-  generationModelName: v.picklistAsync(
-    (await getGenerationModelFactory()).getModelsName(),
-    "Invalid model name",
-  ),
-});
+const BodySchemaPromise = async () => {
+  return v.objectAsync({
+    name: v.string(),
+    generationModelName: v.picklistAsync(
+      (await getGenerationModelFactory()).getModelsName(),
+      "Invalid model name",
+    ),
+  });
+};
 
 export async function createChatSession_cb(req: Request, res: Response) {
   const user = getUser(req, res);

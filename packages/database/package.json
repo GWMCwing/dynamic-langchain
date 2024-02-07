@@ -3,12 +3,14 @@
   "module": "index.ts",
   "main": "dist/index.js",
   "private": true,
+  "type": "module",
   "exports": {
     ".": "./dist/index.js"
   },
   "types": "./dist/index.d.ts",
   "scripts": {
-    "db:generate": "prisma generate"
+    "db:generate": "prisma generate",
+    "build": "tsc"
   },
   "devDependencies": {
     "@types/bun": "latest"

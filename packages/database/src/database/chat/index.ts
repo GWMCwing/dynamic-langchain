@@ -1,7 +1,7 @@
 import type { PrismaClient } from "@prisma/client";
-import { ChatSchema_Chat } from "./chat";
-import { ChatSchema_Session } from "./session";
-import { ChatSchema_Config } from "./config";
+import { ChatSchema_Chat } from "./chat.js";
+import { ChatSchema_Session } from "./session.js";
+import { ChatSchema_Config } from "./config.js";
 
 export class ChatSchema {
   constructor(client: PrismaClient) {

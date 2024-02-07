@@ -1,5 +1,5 @@
 import { Document } from "langchain/document";
-import { DocumentHandler } from "./abstract/DocumentHandler";
+import { DocumentHandler } from "./abstract/DocumentHandler.js";
 import type { DocumentLoader } from "langchain/document_loaders/base";
 import type { TextSplitter } from "langchain/text_splitter";
 

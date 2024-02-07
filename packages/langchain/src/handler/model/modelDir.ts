@@ -1,3 +1,3 @@
 import { join } from "path";
 
-export const ModelsDir = join(__dirname, "../../../models");
+export const ModelsDir = join(import.meta.dirname, "../../../models");
