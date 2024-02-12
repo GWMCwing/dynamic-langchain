@@ -4,9 +4,35 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./types/index.ts"
+    ".": {
+      "default": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./utility": {
+      "default": "./dist/utility/index.js",
+      "types": "./dist/utility/index.d.ts"
+    },
+    "./utility/*": {
+      "default": "./dist/utility/*.js",
+      "types": "./dist/utility/*.d.ts"
+    },
+    "./route": {
+      "default": "./dist/path/index.js",
+      "types": "./dist/path/index.d.ts"
+    },
+    "./route/auth": {
+      "default": "./dist/path/auth/index.js",
+      "types": "./dist/path/auth/index.d.ts"
+    },
+    "./data": {
+      "default": "./dist/data/index.js",
+      "types": "./dist/data/index.d.ts"
+    },
+    "./data/*": {
+      "default": "./dist/data/*.js",
+      "types": "./dist/data/*.d.ts"
+    }
   },
-  "types": "./@types/index.d.ts",
   "scripts": {
     "build": "tsc"
   },

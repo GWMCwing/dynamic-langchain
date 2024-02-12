@@ -2,7 +2,7 @@ import { config } from "dotenv";
 config();
 
 const requiredEnv = ["POSTGRES_DATABASE_CONNECTION_URL", "JWT_SECRET"] as const;
-const optionalEnv = ["PORT", "TRUST_PROXY"] as const;
+const optionalEnv = ["PORT", "TRUST_PROXY", "CORS_ORIGIN"] as const;
 
 export const env: Record<(typeof requiredEnv)[number], string> &
   Partial<Record<(typeof optionalEnv)[number], string>> = {} as any;

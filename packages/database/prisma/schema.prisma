@@ -18,14 +18,33 @@ model User {
   passwordHash String        @map("password_hash")
   salt         String
   // 
-  createdAt    DateTime      @default(now()) @map("created_at") @db.Timestamp()
-  updatedAt    DateTime      @default(now()) @updatedAt @map("updated_at") @db.Timestamp()
+  createdAt    DateTime      @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt    DateTime      @default(now()) @updatedAt @map("updated_at") @db.Timestamptz()
   // 
   ChatSession  ChatSession[]
   Document     Document[]
+  UserSession  UserSession[]
 
   // 
   @@map("user")
+  @@schema("users")
+}
+
+model UserSession {
+  id        String   @id @default(dbgenerated("gen_random_uuid()"))
+  // 
+  userId    String   @map("user_id")
+  expiredAt DateTime @map("expired_at") @db.Timestamptz()
+  active    Boolean  @default(true)
+  // 
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz()
+  // 
+  User      User     @relation(fields: [userId], references: [id])
+
+  // 
+  // 
+  @@map("user_session")
   @@schema("users")
 }
 
@@ -34,8 +53,8 @@ model ChatSession {
   // 
   name              String
   // 
-  createdAt         DateTime           @default(now()) @map("created_at") @db.Timestamp()
-  updatedAt         DateTime           @default(now()) @updatedAt @map("updated_at") @db.Timestamp()
+  createdAt         DateTime           @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt         DateTime           @default(now()) @updatedAt @map("updated_at") @db.Timestamptz()
   // 
   User              User               @relation(fields: [userId], references: [id])
   userId            String             @map("user_id")
@@ -58,8 +77,8 @@ model ChatSessionConfig {
   // 
   config            Json            @default("{}") @db.JsonB
   // 
-  createdAt         DateTime        @default(now()) @map("created_at") @db.Timestamp()
-  updatedAt         DateTime        @default(now()) @updatedAt @map("updated_at") @db.Timestamp()
+  createdAt         DateTime        @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt         DateTime        @default(now()) @updatedAt @map("updated_at") @db.Timestamptz()
   // 
   Session           ChatSession     @relation(fields: [chatSessionId], references: [id])
   GenerationModel   GenerationModel @relation(fields: [generationModelId], references: [id])
@@ -124,8 +143,8 @@ model Document {
   language                  DocumentLanguage?
   global                    Boolean             @default(false)
   // 
-  createdAt                 DateTime            @default(now()) @map("created_at") @db.Timestamp()
-  updatedAt                 DateTime            @default(now()) @updatedAt @map("updated_at") @db.Timestamp()
+  createdAt                 DateTime            @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt                 DateTime            @default(now()) @updatedAt @map("updated_at") @db.Timestamptz()
   // 
   User                      User                @relation(fields: [userId], references: [id])
   DocumentEmbedding         DocumentEmbedding[]
@@ -177,8 +196,8 @@ model Embedding {
   // 
   embedding         Float[]             @map("embedding") @db.DoublePrecision
   // 
-  createdAt         DateTime            @default(now()) @map("created_at") @db.Timestamp()
-  updatedAt         DateTime            @default(now()) @updatedAt @map("updated_at") @db.Timestamp()
+  createdAt         DateTime            @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt         DateTime            @default(now()) @updatedAt @map("updated_at") @db.Timestamptz()
   // 
   EmbeddingModel    EmbeddingModel      @relation(fields: [embeddingModelId], references: [id])
   embeddingModelId  String              @map("embedding_model_id")
@@ -197,8 +216,8 @@ model Memory {
   response                  String
   contentEmbeddingTruncated Boolean?          @map("content_embedding_truncated")
   // 
-  createdAt                 DateTime          @default(now()) @map("created_at") @db.Timestamp()
-  updatedAt                 DateTime          @default(now()) @updatedAt @map("updated_at") @db.Timestamp()
+  createdAt                 DateTime          @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt                 DateTime          @default(now()) @updatedAt @map("updated_at") @db.Timestamptz()
   // 
   ChatSession               ChatSession       @relation(fields: [chatSessionId], references: [id])
   chatSessionId             String            @unique @map("session_id")
@@ -220,8 +239,8 @@ model EmbeddingModel {
   dimension     Int
   active        Boolean
   // 
-  createdAt     DateTime    @default(now()) @map("created_at") @db.Timestamp()
-  updatedAt     DateTime    @default(now()) @updatedAt @map("updated_at") @db.Timestamp()
+  createdAt     DateTime    @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt     DateTime    @default(now()) @updatedAt @map("updated_at") @db.Timestamptz()
   // 
   Embedding     Embedding[]
 
@@ -238,8 +257,8 @@ model GenerationModel {
   name              String              @unique
   active            Boolean
   // 
-  createdAt         DateTime            @default(now()) @map("created_at") @db.Timestamp()
-  updatedAt         DateTime            @default(now()) @updatedAt @map("updated_at") @db.Timestamp()
+  createdAt         DateTime            @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt         DateTime            @default(now()) @updatedAt @map("updated_at") @db.Timestamptz()
   // 
   ChatSessionConfig ChatSessionConfig[]
 

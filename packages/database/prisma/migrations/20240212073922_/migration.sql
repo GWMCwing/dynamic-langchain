@@ -22,18 +22,30 @@ CREATE TABLE "users"."user" (
     "name" TEXT NOT NULL,
     "password_hash" TEXT NOT NULL,
     "salt" TEXT NOT NULL,
-    "created_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "user_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "users"."user_session" (
+    "id" TEXT NOT NULL DEFAULT gen_random_uuid(),
+    "user_id" TEXT NOT NULL,
+    "expired_at" TIMESTAMPTZ NOT NULL,
+    "active" BOOLEAN NOT NULL DEFAULT true,
+    "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "user_session_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "chat"."session" (
     "id" TEXT NOT NULL DEFAULT gen_random_uuid(),
     "name" TEXT NOT NULL,
-    "created_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "user_id" TEXT NOT NULL,
 
     CONSTRAINT "session_pkey" PRIMARY KEY ("id")
@@ -42,9 +54,9 @@ CREATE TABLE "chat"."session" (
 -- CreateTable
 CREATE TABLE "chat"."session_config" (
     "id" TEXT NOT NULL DEFAULT gen_random_uuid(),
-    "config" JSON NOT NULL DEFAULT '{}',
-    "created_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "config" JSONB NOT NULL DEFAULT '{}',
+    "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "session_id" TEXT NOT NULL,
     "generation_model_id" TEXT NOT NULL,
 
@@ -69,8 +81,8 @@ CREATE TABLE "langchain"."document" (
     "metadata" JSON NOT NULL DEFAULT '{}',
     "language" "langchain"."document_language",
     "global" BOOLEAN NOT NULL DEFAULT false,
-    "created_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "user_id" TEXT NOT NULL,
 
     CONSTRAINT "document_pkey" PRIMARY KEY ("id")
@@ -96,8 +108,8 @@ CREATE TABLE "langchain"."memory_embedding" (
 CREATE TABLE "langchain"."embedding" (
     "id" TEXT NOT NULL DEFAULT gen_random_uuid(),
     "embedding" DOUBLE PRECISION[],
-    "created_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "embedding_model_id" TEXT NOT NULL,
 
     CONSTRAINT "embedding_pkey" PRIMARY KEY ("id")
@@ -109,8 +121,8 @@ CREATE TABLE "langchain"."memory" (
     "question" TEXT NOT NULL,
     "response" TEXT NOT NULL,
     "content_embedding_truncated" BOOLEAN,
-    "created_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "session_id" TEXT NOT NULL,
 
     CONSTRAINT "memory_pkey" PRIMARY KEY ("id")
@@ -123,8 +135,8 @@ CREATE TABLE "langchain"."embedding_model" (
     "contentLength" INTEGER NOT NULL,
     "dimension" INTEGER NOT NULL,
     "active" BOOLEAN NOT NULL,
-    "created_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "embedding_model_pkey" PRIMARY KEY ("id")
 );
@@ -134,8 +146,8 @@ CREATE TABLE "langchain"."generation_model" (
     "id" TEXT NOT NULL DEFAULT gen_random_uuid(),
     "name" TEXT NOT NULL,
     "active" BOOLEAN NOT NULL,
-    "created_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "generation_model_pkey" PRIMARY KEY ("id")
 );
@@ -208,6 +220,9 @@ CREATE UNIQUE INDEX "generation_model_name_key" ON "langchain"."generation_model
 
 -- CreateIndex
 CREATE INDEX "idx_generation_model_name" ON "langchain"."generation_model"("name");
+
+-- AddForeignKey
+ALTER TABLE "users"."user_session" ADD CONSTRAINT "user_session_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"."user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "chat"."session" ADD CONSTRAINT "session_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"."user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

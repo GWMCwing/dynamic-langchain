@@ -10,8 +10,16 @@ import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import { langchainRouter } from "./langchain/router.js";
 import { statusRouter } from "./status/router.js";
+import cors from "cors";
 
 const app = express();
+//
+app.use(
+  cors({
+    origin: new RegExp(`${env.CORS_ORIGIN}$`),
+  }),
+);
+//
 app.use(helmet());
 app.disable("x-powered-by");
 app.set("trust proxy", parseInt(env.TRUST_PROXY ?? "0"));

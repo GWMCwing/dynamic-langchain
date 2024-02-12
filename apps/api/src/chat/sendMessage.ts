@@ -3,7 +3,8 @@ import { getUser } from "../utility/request.js";
 import { getDatabase } from "@repo/database";
 import * as v from "valibot";
 import type { RunnableLike } from "@langchain/core/runnables";
-import type { AllowedModelName } from "@repo/langchain" with { "resolution-mode": "import" };
+import type { AllowedModelName } from "@repo/langchain";
+
 import {
   ModelHandlerFactory,
   RunnableSequence,

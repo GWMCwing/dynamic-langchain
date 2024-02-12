@@ -13,7 +13,10 @@
   "packageManager": "bun@1.0.20",
   "private": true,
   "scripts": {
-    "api:dev": "turbo dev --scope api",
+    "dev:api": "turbo dev --scope api",
+    "dev:web": "turbo dev --scope web",
+    "build:api": "turbo build --scope api",
+    "build:web": "turbo build --scope web",
     "build": "turbo build",
     "dev": "turbo dev",
     "lint": "turbo lint",
