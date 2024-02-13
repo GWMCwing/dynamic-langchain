@@ -17,6 +17,7 @@
     "@repo/api-types": "workspace:^",
     "@repo/ui": "*",
     "axios": "^1.6.3",
+    "moment-timezone": "^0.5.45",
     "next": "^14.0.3",
     "next-auth": "^4.24.5",
     "react": "^18.2.0",

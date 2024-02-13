@@ -67,9 +67,9 @@ function SessionItem(
   );
 }
 
-export default function chatSessions() {
+export default function ChatSessions() {
   return (
-    <Card variant="outlined" sx={{ width: "100vw" }}>
+    <Card variant="outlined" sx={{ width: "100%" }}>
       <Typography
         textAlign={"center"}
         fontWeight={"bold"}

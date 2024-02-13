@@ -4,6 +4,7 @@ import type { JSX, ReactNode } from "react";
 import { Inter } from "next/font/google";
 import { NavBar } from "@components/navbar/navbar";
 import { NextAuthSessionProvider } from "@context/auth/NextAuth";
+import { Box, Card, Container, Grid } from "@mui/material";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,17 +20,7 @@ export default function RootLayout({
 }): JSX.Element {
   return (
     <html lang="en">
-      <body
-        className={inter.className}
-        style={{
-          minHeight: "100lvh",
-        }}
-      >
-        <NextAuthSessionProvider>
-          <NavBar />
-          {children}
-        </NextAuthSessionProvider>
-      </body>
+      <body className={inter.className}>{children}</body>
     </html>
   );
 }
