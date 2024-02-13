@@ -9,6 +9,8 @@ import { getChatSessionList_cb } from "./getChatSessionList.js";
 const router: Router = Router();
 
 router.get("/chatSessions", requireLogin_Middleware, getChatSessionList_cb);
+router.post("/chatSessions", requireLogin_Middleware, createChatSession_cb);
+
 router.get(
   "/chatSessions/:chatSessionId",
   requireLogin_Middleware,
@@ -22,10 +24,5 @@ router.get(
 );
 
 router.post("/sendMessage", requireLogin_Middleware, sendMessage_cb);
-router.post(
-  "/createChatSession",
-  requireLogin_Middleware,
-  createChatSession_cb,
-);
 
 export { router as chatRouter };

@@ -9,6 +9,11 @@ import {
   RunnableSequence,
   StringOutputParser,
 } from "@repo/langchain";
+import { ChatMessage } from "@repo/api-types/route/chat";
+import { RequestBodyOf, ResponseBodyOf } from "@repo/api-types/utility/reducer";
+
+type ReqBodyDefinition = RequestBodyOf<ChatMessage, "POST">;
+type ResBodyDefinition = ResponseBodyOf<ChatMessage, "POST">;
 
 const BodySchema = v.object({
   sessionId: v.string(),
@@ -16,22 +21,34 @@ const BodySchema = v.object({
   text: v.string(),
 });
 
-export async function sendMessage_cb(req: Request, res: Response) {
-  if (!req.user)
-    return res.status(401).json({ success: false, error: "Unauthorized" });
-  const user = req.user;
-  //
-  const { chatSessionId } = req.params;
-  const result = v.safeParse(BodySchema, req.body);
-  if (!result.success) {
-    return res.status(400).json({
-      success: false,
-      error: "Invalid body parameters",
-    });
-  }
-  const { sessionId, text, systemMessage } = result.output;
-  //
+export async function sendMessage_cb(
+  req: Request,
+  res: Response<ResBodyDefinition>,
+): Promise<Response<ResBodyDefinition>> {
+  // TODO: add message to memory after generation
   try {
+    if (!req.user)
+      return res.status(401).json({ success: false, error: "Unauthorized" });
+    const user = req.user;
+    //
+    const { chatSessionId } = req.params;
+    if (chatSessionId === undefined) {
+      return res.status(400).json({
+        success: false,
+        error: "Invalid chat session id",
+      });
+    }
+    //
+    const result = v.safeParse(BodySchema, req.body);
+    if (!result.success) {
+      return res.status(400).json({
+        success: false,
+        error: "Invalid body parameters",
+      });
+    }
+    const { sessionId, text, systemMessage } =
+      result.output satisfies ReqBodyDefinition;
+    //
     const db = await getDatabase();
     const sessionConfig = await db.chat.config.getChatSessionConfig(
       user.userId,
@@ -55,6 +72,7 @@ export async function sendMessage_cb(req: Request, res: Response) {
         error: "Generation model not found",
       });
     }
+    //
     if (!generationModelInfo.active) {
       return res.status(400).json({
         success: false,
@@ -75,41 +93,32 @@ export async function sendMessage_cb(req: Request, res: Response) {
     //
     const runnableSequence: RunnableLike[] = [];
     //
-
-    try {
-      // TODO: auto load model
-      const model = generationModelHandler.getModelRunnable();
-      runnableSequence.push(template);
-      runnableSequence.push(model);
-      runnableSequence.push(new StringOutputParser());
-      //
-      const result = await RunnableSequence.from(
-        runnableSequence as any,
-      ).invoke({
-        prompt: text,
-        context: "",
-        system_message: systemMessage,
-      });
-      console.log(result);
-      //
-      return res.status(200).json({
-        success: true,
-        data: {
-          text: result,
-        },
-      });
-    } catch (error) {
-      console.error(error);
-      return res.status(400).json({
-        success: false,
-        error: "Generation model is not active",
-      });
-    }
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({
-      success: false,
-      error: "Internal server error",
+    // TODO: auto load model
+    const model = generationModelHandler.getModelRunnable();
+    runnableSequence.push(template);
+    runnableSequence.push(model);
+    runnableSequence.push(new StringOutputParser());
+    //
+    const runnableResult = await RunnableSequence.from(
+      runnableSequence as any,
+    ).invoke({
+      prompt: text,
+      context: "",
+      system_message: systemMessage,
     });
+    //
+    console.log(runnableResult);
+    //
+    return res.status(200).json({
+      success: true,
+      data: {
+        text: runnableResult,
+      },
+    });
+  } catch (err) {
+    console.error(err);
+    return res
+      .status(500)
+      .json({ success: false, error: "Internal server error" });
   }
 }

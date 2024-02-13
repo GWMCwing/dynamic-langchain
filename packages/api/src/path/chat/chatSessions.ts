@@ -2,9 +2,12 @@ import {
   ResponseDefinition,
   HeaderWithAuth,
   GetRequestDefinition,
+  PostRequestDefinition,
 } from "../../utility/request.js";
-import type { ChatSession as ChatSession_DB } from "@repo/database/prisma/client.js";
-import type { ChatSchema_Session_Action } from "@repo/database/prisma/action.js";
+import type {
+  ChatSchema_Chat_Action,
+  ChatSchema_Session_Action,
+} from "@repo/database/prisma/action.js";
 import { InterfaceDefinition, RouteDefinition } from "../../utility/route.js";
 
 type GET_SessionList = InterfaceDefinition<
@@ -41,9 +44,35 @@ type GET_Session = InterfaceDefinition<
   >
 >;
 
+type POST_CreateSession = InterfaceDefinition<
+  "POST",
+  PostRequestDefinition<
+    HeaderWithAuth,
+    {
+      name: string;
+      generationModelName: string;
+    }
+  >,
+  ResponseDefinition<
+    | {
+        success: false;
+        error: string;
+      }
+    | {
+        success: true;
+        chatSession: Awaited<ChatSchema_Chat_Action["createChat"]["Returns"]>;
+      }
+  >
+>;
+
 export type ChatSessionList = RouteDefinition<
   "/chat/chatSessions",
   { GET: GET_SessionList }
+>;
+
+export type CreateChatSession = RouteDefinition<
+  "/chat/chatSessions",
+  { POST: POST_CreateSession }
 >;
 
 export type ChatSession = RouteDefinition<
