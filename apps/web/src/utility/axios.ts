@@ -12,6 +12,7 @@ import {
   RouteInterfaceDefinition,
   RoutePath,
 } from "@repo/api-types/utility/route";
+import { HeaderWithAuth } from "@repo/api-types/utility";
 
 type ConfiguredAxiosConfig = Pick<
   AxiosRequestConfig,
@@ -113,4 +114,23 @@ function AxiosFetch<
   //
 }
 
-export { AxiosFetch };
+function AxiosFetchWithAuth<
+  Route extends RouteDefinition<RoutePath, RouteInterfaceDefinition>,
+  Method extends MethodOf<Route>,
+>(
+  method: Method,
+  url: PathOf<Route>,
+  headers: HeadersOf<Route, Method>,
+  params: ParamsOf<Route, Method>,
+  body: RequestBodyOf<Route, Method>,
+  auth: string,
+  config: ConfigurableAxiosConfig = {},
+) {
+  const header = {
+    ...headers,
+    Authorization: auth,
+  } satisfies HeaderWithAuth;
+  return AxiosFetch(method, url, header, params, body, config);
+}
+
+export { AxiosFetch, AxiosFetchWithAuth };

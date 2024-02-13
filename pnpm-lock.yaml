@@ -157,6 +157,9 @@ importers:
       axios:
         specifier: ^1.6.3
         version: 1.6.7(debug@4.3.4)
+      moment-timezone:
+        specifier: ^0.5.45
+        version: 0.5.45
       next:
         specifier: ^14.0.3
         version: 14.1.0(react-dom@18.2.0)(react@18.2.0)
@@ -204,6 +207,9 @@ importers:
         specifier: ^1.6.3
         version: 1.6.7(debug@4.3.4)
     devDependencies:
+      '@repo/database':
+        specifier: '*'
+        version: link:../database
       '@repo/typescript-config':
         specifier: '*'
         version: link:../typescript-config
@@ -5934,6 +5940,16 @@ packages:
     dependencies:
       binary-search: 1.3.6
       num-sort: 2.1.0
+
+  /moment-timezone@0.5.45:
+    resolution: {integrity: sha512-HIWmqA86KcmCAhnMAN0wuDOARV/525R2+lOLotuGFzn4HO+FH+/645z2wx0Dt3iDv6/p61SIvKnDstISainhLQ==}
+    dependencies:
+      moment: 2.30.1
+    dev: false
+
+  /moment@2.30.1:
+    resolution: {integrity: sha512-uEmtNhbDOrWPFS+hdjFCBfy9f2YoyzRpwcl+DqpC6taX21FzsTLQVbMV/W7PzNSX6x/bhC1zA3c2UQ5NzH6how==}
+    dev: false
 
   /morgan@1.10.0:
     resolution: {integrity: sha512-AbegBVI4sh6El+1gNwvD5YIck7nSA36weD7xvIxG4in80j/UoK8AEGaWnnz8v1GxonMCltmlNs5ZKbGvl9b1XQ==}

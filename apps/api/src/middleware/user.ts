@@ -13,14 +13,17 @@ export async function requireLogin_Middleware(
   res: Response,
   next: NextFunction,
 ) {
-  const { user: userJWT } = req.cookies;
-  if (!userJWT) return resUnAuth(res, "1");
+  let { user: userJWT } = req.cookies;
+  if (!userJWT) {
+    userJWT = req.headers.authorization?.split(" ")[1];
+  }
+  if (!userJWT) return resUnAuth(res, "No user cookie or token found");
   //
   const user = await decodeJWT(userJWT);
-  if (!user) return resUnAuth(res, "2");
+  if (!user) return resUnAuth(res, "Invalid user cookie");
   //
   const result = v.safeParse(UserSchema, user);
-  if (!result.success) return resUnAuth(res, "3");
+  if (!result.success) return resUnAuth(res, "Invalid user cookie data");
   //
   req.user = result.output;
   //
