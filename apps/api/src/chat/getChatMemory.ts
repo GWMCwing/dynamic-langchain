@@ -1,5 +1,4 @@
 import type { Request, Response } from "express";
-import { getUser } from "../utility/request.js";
 import { getDatabase } from "@repo/database";
 import { OptionalIntStringSchema } from "../utility/valibot.js";
 
@@ -11,8 +10,10 @@ const QuerySchema = v.object({
 });
 
 export async function getChatMemory_cb(req: Request, res: Response) {
-  const user = getUser(req, res);
-  if (!user) return;
+  if (!req.user)
+    return res.status(401).json({ success: false, error: "Unauthorized" });
+  const user = req.user;
+  //
   const { chatSessionId } = req.params;
   if (chatSessionId === undefined) {
     return res.status(400).json({

@@ -1,5 +1,4 @@
 import type { Request, Response } from "express";
-import { getUser } from "../utility/request.js";
 import { getDatabase } from "@repo/database";
 import type { ChatSession } from "@repo/api-types/route/chat";
 import { RequestBodyOf, ResponseBodyOf } from "@repo/api-types/utility";
@@ -12,9 +11,10 @@ export async function getChatSession_cb(
   res: Response<ResBodyDefinition>,
 ): Promise<Response<ResBodyDefinition>> {
   try {
-    const user = getUser(req, res);
-    if (!user)
-      return res.status(400).json({ success: false, error: "Invalid user" });
+    if (!req.user)
+      return res.status(401).json({ success: false, error: "Unauthorized" });
+    const user = req.user;
+    //
     const { chatSessionId } = req.params;
     if (chatSessionId === undefined) {
       return res.status(400).json({

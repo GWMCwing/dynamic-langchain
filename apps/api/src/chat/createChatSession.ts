@@ -1,5 +1,4 @@
 import type { Request, Response } from "express";
-import { getUser } from "../utility/request.js";
 import { getDatabase } from "@repo/database";
 import * as v from "valibot";
 import { getGenerationModelFactory } from "@repo/langchain";
@@ -15,8 +14,9 @@ const BodySchemaPromise = async () => {
 };
 
 export async function createChatSession_cb(req: Request, res: Response) {
-  const user = getUser(req, res);
-  if (!user) return;
+  if (!req.user)
+    return res.status(401).json({ success: false, error: "Unauthorized" });
+  const user = req.user;
   //
   const db = await getDatabase();
 

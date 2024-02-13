@@ -1,5 +1,4 @@
 import type { Request, Response } from "express";
-import { getUser } from "../utility/request.js";
 import { getDatabase } from "@repo/database";
 import * as v from "valibot";
 import type { RunnableLike } from "@langchain/core/runnables";
@@ -18,8 +17,10 @@ const BodySchema = v.object({
 });
 
 export async function sendMessage_cb(req: Request, res: Response) {
-  const user = getUser(req, res);
-  if (!user) return;
+  if (!req.user)
+    return res.status(401).json({ success: false, error: "Unauthorized" });
+  const user = req.user;
+  //
   const { chatSessionId } = req.params;
   const result = v.safeParse(BodySchema, req.body);
   if (!result.success) {
