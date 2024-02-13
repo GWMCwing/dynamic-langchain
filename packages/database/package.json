@@ -5,7 +5,10 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./dist/index.js"
+    ".": "./dist/index.js",
+    "./prisma": "./dist/prisma-type/index.js",
+    "./prisma/client.js": "./dist/prisma-type/client.js",
+    "./prisma/action.js": "./dist/prisma-type/action.js"
   },
   "types": "./dist/index.d.ts",
   "scripts": {
