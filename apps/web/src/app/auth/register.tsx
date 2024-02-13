@@ -15,9 +15,9 @@ import {
   AuthCard,
   SubmitButton,
   AuthSx,
-} from "@components/auth";
+} from "@components/auth/authPage";
 import { Button, CircularProgress } from "@mui/material";
-import { ErrorText } from "@components/auth/ErrorText";
+import { ErrorText } from "@components/auth/authPage/ErrorText";
 import { AxiosFetch } from "@utility/axios";
 import { Register } from "@repo/api-types/route/auth";
 

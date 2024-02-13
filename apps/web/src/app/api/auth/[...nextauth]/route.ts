@@ -3,7 +3,10 @@ import { AxiosFetch } from "@utility/axios";
 import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
-async function validateSession(sessionId: string): Promise<boolean> {
+async function validateSession(
+  userId: string,
+  sessionId: string,
+): Promise<boolean> {
   try {
     const axios = AxiosFetch<Validate, "POST">(
       "POST",
@@ -11,8 +14,8 @@ async function validateSession(sessionId: string): Promise<boolean> {
       {},
       {},
       {
-        userId: "string",
-        sessionId: "string",
+        userId: userId,
+        sessionId: sessionId,
       },
     );
     const { data } = await axios();
@@ -39,6 +42,11 @@ const authOptions: NextAuthOptions = {
       return { ...token, ...user };
     },
     async session({ session, token }) {
+      // Validate the session
+      const isValid = await validateSession(token.userId, token.sessionId);
+      if (!isValid) {
+        throw new Error("Invalid session");
+      }
       session.user = token;
       return session;
     },

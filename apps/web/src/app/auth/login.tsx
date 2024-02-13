@@ -7,8 +7,8 @@ import {
   PasswordInput,
   SubmitButton,
   TextInput,
-} from "@components/auth";
-import { ErrorText } from "@components/auth/ErrorText";
+} from "@components/auth/authPage";
+import { ErrorText } from "@components/auth/authPage/ErrorText";
 import { Button, CircularProgress } from "@mui/material";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
