@@ -5,14 +5,35 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./dist/index.js",
-    "./prisma": "./dist/prisma-type/index.js",
-    "./prisma/client.js": "./dist/prisma-type/client.js",
-    "./prisma/action.js": "./dist/prisma-type/action.js"
+    ".": {
+      "default": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./prisma": {
+      "default": "./dist/prisma-type/index.js",
+      "types": "./dist/prisma-type/index.d.ts"
+    },
+    "./prisma/client": {
+      "default": "./dist/prisma-type/client.js",
+      "types": "./dist/prisma-type/client.d.ts"
+    },
+    "./prisma/action": {
+      "default": "./dist/prisma-type/action.js",
+      "types": "./dist/prisma-type/action.d.ts"
+    },
+    "./prisma/client.js": {
+      "default": "./dist/prisma-type/client.js",
+      "types": "./dist/prisma-type/client.d.ts"
+    },
+    "./prisma/action.js": {
+      "default": "./dist/prisma-type/action.js",
+      "types": "./dist/prisma-type/action.d.ts"
+    }
   },
   "types": "./dist/index.d.ts",
   "scripts": {
     "db:generate": "prisma generate",
+    "db:seed": "tsc && ./dist/seed/index.js",
     "build": "tsc"
   },
   "devDependencies": {

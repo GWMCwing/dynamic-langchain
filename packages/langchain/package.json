@@ -4,7 +4,18 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./dist/index.js"
+    ".": {
+      "default": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./typing": {
+      "default": "./dist/typing/index.js",
+      "types": "./dist/typing/index.d.ts"
+    },
+    "./typing.js": {
+      "default": "./dist/typing/index.js",
+      "types": "./dist/typing/index.d.ts"
+    }
   },
   "scripts": {
     "build": "tsc"

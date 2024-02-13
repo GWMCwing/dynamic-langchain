@@ -9,6 +9,7 @@ import type {
   ChatSchema_Session_Action,
 } from "@repo/database/prisma/action.js";
 import { InterfaceDefinition, RouteDefinition } from "../../utility/route.js";
+import { AllowedModelName_GenerationModel } from "@repo/langchain/typing";
 
 type GET_SessionList = InterfaceDefinition<
   "GET",
@@ -50,7 +51,7 @@ type POST_CreateSession = InterfaceDefinition<
     HeaderWithAuth,
     {
       name: string;
-      generationModelName: string;
+      generationModelName: AllowedModelName_GenerationModel;
     }
   >,
   ResponseDefinition<
