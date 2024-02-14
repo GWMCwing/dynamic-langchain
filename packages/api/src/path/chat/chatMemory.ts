@@ -19,7 +19,8 @@ type GET_ChatMemory = InterfaceDefinition<
         chatSession: Awaited<
           ChatSchema_Chat_Action["getChatMemory"]["Returns"]
         >;
-      }
+      },
+    "json"
   >
 >;
 

@@ -27,6 +27,14 @@ export class UserSchema {
     });
   }
 
+  async getUser_id(id: string): Promise<User | null> {
+    return this.client.user.findUnique({
+      where: {
+        id: id,
+      },
+    });
+  }
+
   async createUserSession(userId: string): Promise<UserSession> {
     const expireDate = new Date();
     expireDate.setDate(expireDate.getDate() + 30);

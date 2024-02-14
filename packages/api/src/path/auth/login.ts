@@ -24,7 +24,8 @@ type POST = InterfaceDefinition<
         success: true;
         userData: UserJWTData;
         token: string;
-      }
+      },
+    "json"
   >
 >;
 

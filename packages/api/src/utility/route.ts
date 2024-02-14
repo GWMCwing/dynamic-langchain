@@ -1,3 +1,4 @@
+import { ResponseType } from "axios";
 import type {
   BaseRequestDefinition,
   RequestMethod,
@@ -9,7 +10,10 @@ export type RoutePath = `/${string}`;
 export type InterfaceDefinition<
   _RequestMethod extends RequestMethod,
   Request extends BaseRequestDefinition<_RequestMethod>,
-  Response extends ResponseDefinition,
+  Response extends ResponseDefinition<
+    string | Record<string, any>,
+    ResponseType
+  >,
 > = {
   request: Request;
   response: Response;
@@ -19,7 +23,7 @@ export type RouteInterfaceDefinition = {
   [key in RequestMethod]?: InterfaceDefinition<
     key,
     BaseRequestDefinition<key>,
-    ResponseDefinition
+    ResponseDefinition<string | Record<string, any>, ResponseType>
   >;
 };
 

@@ -39,6 +39,12 @@ export type ResponseBodyOf<
   __Response extends ResponseOf<Route, Method> = ResponseOf<Route, Method>,
 > = __Response["body"];
 //
+export type ResponseTypeOf<
+  Route extends RouteDefinition<RoutePath, RouteInterfaceDefinition>,
+  Method extends MethodOf<Route>,
+  __Response extends ResponseOf<Route, Method> = ResponseOf<Route, Method>,
+> = __Response["type"];
+//
 export type BodyOf<
   T extends "Response" | "Request",
   Route extends RouteDefinition<RoutePath, RouteInterfaceDefinition>,

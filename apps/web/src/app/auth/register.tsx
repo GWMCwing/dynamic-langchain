@@ -52,14 +52,15 @@ async function handleOnSubmit(
     const { data } = await AxiosFetch<Register, "POST">(
       "POST",
       "/auth/register",
-      {},
-      {},
+      "json",
       {
-        username: userName,
-        password: password,
-      },
-      {
-        validateStatus: (status) => status < 500, // Resolve only if the status code is less than 500
+        body: {
+          username: userName,
+          password: password,
+        },
+        config: {
+          validateStatus: (status) => status < 500, // Resolve only if the status code is less than 500
+        },
       },
     )();
     //

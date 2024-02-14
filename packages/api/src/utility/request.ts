@@ -1,6 +1,10 @@
+import { ResponseType } from "axios";
+
 export type HeaderDefinition = Record<string, string>;
 export type EmptyHeader = {};
-export type HeaderWithAuth = HeaderDefinition & { Authorization: string };
+export type HeaderWithAuth = HeaderDefinition & {
+  Authorization: `Bearer ${string}`;
+};
 //
 export type EmptyBody = {};
 export type EmptyParams = {};
@@ -29,7 +33,7 @@ export type GetRequestDefinition<
   Header extends Record<string, any> = EmptyHeader,
   Params extends Record<string, any> = EmptyParams,
   Query extends Record<string, any> = EmptyQuery,
-> = BaseRequestDefinition<"GET", Header, Body, Params, Query>;
+> = BaseRequestDefinition<"GET", Header, EmptyBody, Params, Query>;
 
 export type PostRequestDefinition<
   Header extends Record<string, any> = EmptyHeader,
@@ -51,7 +55,10 @@ export type DeleteRequestDefinition<
   Query extends Record<string, any> = EmptyQuery,
 > = BaseRequestDefinition<"DELETE", Header, {}, Params, Query>;
 
-export type ResponseDefinition<Body extends Record<string, any> | string = {}> =
-  {
-    body: Body;
-  };
+export type ResponseDefinition<
+  Body extends Record<string, any> | string,
+  Type extends ResponseType,
+> = {
+  body: Body;
+  type: Type;
+};

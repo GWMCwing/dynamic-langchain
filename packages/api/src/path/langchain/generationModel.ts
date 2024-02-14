@@ -17,7 +17,8 @@ type GET_GenerationModelName = InterfaceDefinition<
     | {
         success: true;
         generationModelList: AllowedModelName_GenerationModel[];
-      }
+      },
+    "json"
   >
 >;
 

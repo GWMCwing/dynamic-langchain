@@ -2,11 +2,11 @@ import type { Request, Response } from "express";
 import { getDatabase } from "@repo/database";
 import * as v from "valibot";
 import { getGenerationModelFactory } from "@repo/langchain";
-import { CreateChatSession } from "@repo/api-types/route/chat";
 import { RequestBodyOf, ResponseBodyOf } from "@repo/api-types/utility/reducer";
+import { ChatSessions } from "@repo/api-types/route/chat";
 
-type ReqBodyDefinition = RequestBodyOf<CreateChatSession, "POST">;
-type ResBodyDefinition = ResponseBodyOf<CreateChatSession, "POST">;
+type ReqBodyDefinition = RequestBodyOf<ChatSessions, "POST">;
+type ResBodyDefinition = ResponseBodyOf<ChatSessions, "POST">;
 
 const BodySchemaPromise = async () => {
   return v.objectAsync({

@@ -6,13 +6,34 @@ export class ChatSchema_Session {
   }
   //
 
-  async getChatSessionList(userId: string, limit: number = 10) {
+  async getChatSessionList(
+    userId: string,
+    limit: number = 10,
+    skip: number = 0,
+  ) {
     return this.client.chatSession.findMany({
       select: {
         id: true,
         name: true,
         createdAt: true,
         updatedAt: true,
+        //
+        ChatSessionConfig: {
+          include: {
+            GenerationModel: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
+        //
+        Memory: {
+          take: 1,
+          orderBy: {
+            createdAt: "desc",
+          },
+        },
       },
       where: {
         User: {
@@ -22,6 +43,7 @@ export class ChatSchema_Session {
       orderBy: {
         updatedAt: "desc",
       },
+      skip: skip,
       take: limit,
     });
   }

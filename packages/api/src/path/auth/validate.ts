@@ -22,7 +22,8 @@ type POST = InterfaceDefinition<
     | {
         success: true;
         valid: boolean;
-      }
+      },
+    "json"
   >
 >;
 

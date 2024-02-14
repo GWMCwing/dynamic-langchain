@@ -31,14 +31,6 @@ export async function sendMessage_cb(
       return res.status(401).json({ success: false, error: "Unauthorized" });
     const user = req.user;
     //
-    const { chatSessionId } = req.params;
-    if (chatSessionId === undefined) {
-      return res.status(400).json({
-        success: false,
-        error: "Invalid chat session id",
-      });
-    }
-    //
     const result = v.safeParse(BodySchema, req.body);
     if (!result.success) {
       return res.status(400).json({
@@ -86,6 +78,12 @@ export async function sendMessage_cb(
         generationModelInfo.name as AllowedModelName,
       );
     const generationModelHandler = generationModelHandlerResource.resource;
+    console.log("generation model setting");
+    generationModelHandler.setGenerationSettings({
+      temperature: 0.98,
+      topP: 0.37,
+      topK: 100,
+    });
     //
     //
     const promptTemplateHandler = generationModelHandler.getTemplateHandler();

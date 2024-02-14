@@ -1,3 +1,6 @@
+"use client";
+
+import { SessionInfo, SessionListContext } from "@context/chat/sessionList";
 import { AddComment, Chat, GitHub } from "@mui/icons-material";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import {
@@ -10,7 +13,8 @@ import {
   Typography,
 } from "@mui/material";
 import moment from "moment-timezone";
-import { Session } from "next-auth";
+import { useRouter } from "next/navigation";
+import { useContext } from "react";
 
 const textSx: SxProps = {
   textOverflow: "ellipsis",
@@ -70,17 +74,10 @@ function formatDate(date: Date): String {
   return moment(date).format("MMM D");
 }
 
-type SessionInfo = {
-  modelName: string;
-  date: Date;
-  title: string;
-  lastMessage: string;
-};
-
 type ButtonInfo = {
   label: string;
   link?: string;
-  trigger?: () => unknown;
+  onClick?: () => unknown;
   icon?: JSX.Element;
 };
 
@@ -96,7 +93,7 @@ function SessionItem({ modelName, date, title, lastMessage }: SessionInfo) {
           </Grid>
           <Grid item xs={4}>
             <Typography variant="body2" sx={{ ...SidebarSx.item.date }}>
-              {formatDate(date)}
+              {formatDate(new Date(date))}
             </Typography>
           </Grid>
         </Grid>
@@ -118,26 +115,27 @@ function SessionItem({ modelName, date, title, lastMessage }: SessionInfo) {
   );
 }
 
-function ListButton(props: ButtonInfo) {
+function ListButton({ icon, label, onClick }: ButtonInfo) {
   return (
-    <Box display={"flex"} alignItems={"center"} width={"100%"}>
-      {props.icon}
-      <Typography sx={SidebarSx.item.button}>{props.label}</Typography>
+    <Box
+      display={"flex"}
+      alignItems={"center"}
+      width={"100%"}
+      onClick={onClick}
+      sx={SidebarSx.item.box}
+    >
+      {icon}
+      <Typography sx={SidebarSx.item.button}>{label}</Typography>
     </Box>
   );
 }
 
 function SessionItemList(sessions: SessionInfo[]) {
   const len = sessions.length;
-  return sessions.map(({ modelName, date, title, lastMessage }, i) => (
-    <div key={`session-list-item-${modelName}-${title}-${i}`}>
+  return sessions.map((props, i) => (
+    <div key={`session-list-item-${props.modelName}-${props.title}-${i}`}>
       <ListItem sx={SidebarSx.item.sx}>
-        <SessionItem
-          modelName={modelName}
-          date={date}
-          lastMessage={lastMessage}
-          title={title}
-        />
+        <SessionItem {...props} />
         <Divider variant="middle" />
       </ListItem>
       {i !== len - 1 && <Divider variant="middle" />}
@@ -147,37 +145,51 @@ function SessionItemList(sessions: SessionInfo[]) {
 
 function ItemButtonList(links: ButtonInfo[]) {
   const len = links.length;
-  return links.map(({ label, link, icon }, i) => (
-    <div key={`item-button-${label}-${i}`}>
+  return links.map((props, i) => (
+    <div key={`item-button-${props.label}-${i}`}>
       <ListItem sx={SidebarSx.item.sx}>
-        <ListButton label={label} link={link} icon={icon} />
+        <ListButton {...props} />
       </ListItem>
       {i !== len - 1 && <Divider variant="middle" />}
     </div>
   ));
 }
 
+function redirectToNewChat(router: ReturnType<typeof useRouter>) {
+  return router.push("/chat/sessions?newChat=true");
+}
+function redirectToAllChat(router: ReturnType<typeof useRouter>) {
+  return router.push("/chat/sessions?allChat=true");
+}
+
 export function ChatSideBar() {
+  // eslint-disable-next-line no-undef
+  const sessionListContext = useContext(SessionListContext);
+  const router = useRouter();
+
+  if (!sessionListContext) return null;
+  const { sessionList } = sessionListContext;
+
   return (
     <>
       <List sx={{ marginTop: "2rem" }}>
         <Divider />
-        {SessionItemList(
-          [...Array(5)].map(() => ({
-            modelName: "tinyLlama",
-            date: new Date(),
-            title: "Title",
-            lastMessage:
-              "Last Messageasdasda asd asd asd asasdasd asd asd asd  d",
-          })),
-        )}
+        {SessionItemList(sessionList)}
         <Divider />
       </List>
       <List sx={{ marginTop: "auto", marginBottom: "2rem" }}>
         <Divider />
         {ItemButtonList([
-          { label: "All Chat", icon: <Chat /> },
-          { label: "New Chat", icon: <AddComment /> },
+          {
+            label: "All Chat",
+            icon: <Chat />,
+            onClick: () => redirectToAllChat(router),
+          },
+          {
+            label: "New Chat",
+            icon: <AddComment />,
+            onClick: () => redirectToNewChat(router),
+          },
           { label: "Github", link: "/chat/sessions/new", icon: <GitHub /> },
         ])}
         <Divider />

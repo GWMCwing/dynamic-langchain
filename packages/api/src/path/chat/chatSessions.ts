@@ -10,6 +10,7 @@ import type {
 } from "@repo/database/prisma/action.js";
 import { InterfaceDefinition, RouteDefinition } from "../../utility/route.js";
 import { AllowedModelName_GenerationModel } from "@repo/langchain/typing";
+import { RequestBodyOf, ResponseBodyOf } from "../../utility/reducer.js";
 
 type GET_SessionList = InterfaceDefinition<
   "GET",
@@ -21,10 +22,15 @@ type GET_SessionList = InterfaceDefinition<
       }
     | {
         success: true;
-        chatSessionList: Awaited<
-          ChatSchema_Session_Action["getChatSessionList"]["Returns"]
-        >;
-      }
+        chatSessionList: {
+          id: string;
+          modelName: string;
+          date: number;
+          title: string;
+          lastMessage: string;
+        }[];
+      },
+    "json"
   >
 >;
 
@@ -41,7 +47,8 @@ type GET_Session = InterfaceDefinition<
         chatSession: Awaited<
           ChatSchema_Session_Action["getChatSession"]["Returns"]
         >;
-      }
+      },
+    "json"
   >
 >;
 
@@ -62,19 +69,17 @@ type POST_CreateSession = InterfaceDefinition<
     | {
         success: true;
         chatSession: Awaited<ChatSchema_Chat_Action["createChat"]["Returns"]>;
-      }
+      },
+    "json"
   >
 >;
 
-export type ChatSessionList = RouteDefinition<
+export type ChatSessions = RouteDefinition<
   "/chat/chatSessions",
-  { GET: GET_SessionList }
+  { GET: GET_SessionList; POST: POST_CreateSession }
 >;
 
-export type CreateChatSession = RouteDefinition<
-  "/chat/chatSessions",
-  { POST: POST_CreateSession }
->;
+type R = ResponseBodyOf<ChatSessions, "POST">;
 
 export type ChatSession = RouteDefinition<
   `/chat/chatSessions/${string}`,

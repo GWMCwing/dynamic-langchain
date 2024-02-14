@@ -11,11 +11,12 @@ async function validateSession(
     const axios = AxiosFetch<Validate, "POST">(
       "POST",
       "/auth/validate",
-      {},
-      {},
+      "json",
       {
-        userId: userId,
-        sessionId: sessionId,
+        body: {
+          userId: userId,
+          sessionId: sessionId,
+        },
       },
     );
     const { data } = await axios();
@@ -68,11 +69,12 @@ const authOptions: NextAuthOptions = {
         const { data } = await AxiosFetch<Login, "POST">(
           "POST",
           "/auth/login",
-          {},
-          {},
-          { username: username, password: password },
+          "json",
           {
-            validateStatus: (status) => status < 500,
+            body: { username: username, password: password },
+            config: {
+              validateStatus: (status) => status < 500,
+            },
           },
         )();
         if (data.success === true)

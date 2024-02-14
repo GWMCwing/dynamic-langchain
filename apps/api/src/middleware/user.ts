@@ -1,6 +1,7 @@
 import type { NextFunction, Request, Response } from "express";
 import { decodeJWT } from "../utility/jwt.js";
 import * as v from "valibot";
+import { getDatabase } from "@repo/database";
 
 const UserSchema = v.object({
   userId: v.string(),
@@ -13,10 +14,7 @@ export async function requireLogin_Middleware(
   res: Response,
   next: NextFunction,
 ) {
-  let { user: userJWT } = req.cookies;
-  if (!userJWT) {
-    userJWT = req.headers.authorization?.split(" ")[1];
-  }
+  const userJWT = req.headers.authorization?.split(" ")[1];
   if (!userJWT) return resUnAuth(res, "No user cookie or token found");
   //
   const user = await decodeJWT(userJWT);
@@ -24,6 +22,11 @@ export async function requireLogin_Middleware(
   //
   const result = v.safeParse(UserSchema, user);
   if (!result.success) return resUnAuth(res, "Invalid user cookie data");
+  //
+  const user_db = await (
+    await getDatabase()
+  ).user.getUser_id(result.output.userId);
+  if (!user_db) return resUnAuth(res, "Invalid User");
   //
   req.user = result.output;
   //

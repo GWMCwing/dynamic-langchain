@@ -5,16 +5,15 @@ import {
 } from "../../utility/request.js";
 import { InterfaceDefinition, RouteDefinition } from "../../utility/route.js";
 
+type RequestBody = {
+  sessionId: string;
+  systemMessage: string;
+  text: string;
+};
+
 type POST_ChatMessage = InterfaceDefinition<
   "POST",
-  PostRequestDefinition<
-    HeaderWithAuth,
-    {
-      sessionId: string;
-      systemMessage: string;
-      text: string;
-    }
-  >,
+  PostRequestDefinition<HeaderWithAuth, RequestBody>,
   ResponseDefinition<
     | {
         success: false;
@@ -25,7 +24,17 @@ type POST_ChatMessage = InterfaceDefinition<
         data: {
           text: string;
         };
-      }
+      },
+    "json"
+  >
+>;
+
+type POST_ChatMessageStream = InterfaceDefinition<
+  "POST",
+  PostRequestDefinition<HeaderWithAuth, RequestBody>,
+  ResponseDefinition<
+    ReadableStream<string> | { success: false; error: string },
+    "stream"
   >
 >;
 
