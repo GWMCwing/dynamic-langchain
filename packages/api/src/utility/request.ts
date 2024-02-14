@@ -1,4 +1,5 @@
-import { ResponseType } from "axios";
+import type { ResponseType } from "axios";
+import type { ReadStream } from "fs";
 
 export type HeaderDefinition = Record<string, string>;
 export type EmptyHeader = {};
@@ -56,9 +57,14 @@ export type DeleteRequestDefinition<
 > = BaseRequestDefinition<"DELETE", Header, {}, Params, Query>;
 
 export type ResponseDefinition<
-  Body extends Record<string, any> | string,
+  Body extends Record<string, any> | string | ReadStream,
   Type extends ResponseType,
-> = {
-  body: Body;
-  type: Type;
-};
+> = Type extends "stream"
+  ? {
+      body: ReadStream;
+      type: "stream" & ResponseType;
+    }
+  : {
+      body: Body;
+      type: Type;
+    };
