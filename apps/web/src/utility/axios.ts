@@ -51,10 +51,12 @@ function defaultedAxiosFetchParams<
     headers: {},
     params: {},
     body: {},
+    ...data,
     config: {
       responseType: responseType,
+      validateStatus: (status) => status < 500,
+      ...data.config,
     } as ConfigurableAxiosConfigWithResponseType,
-    ...data,
   } as const;
 }
 
@@ -68,8 +70,15 @@ function AxiosGET<
   data: AxiosFetchDataParams<Route, Method>,
 ) {
   const GET = axiosInstance.get<ResponseBodyOf<Route, Method>>;
-  const { body, ...config } = defaultedAxiosFetchParams(responseType, data);
-  return GET.bind(null, url, config);
+  const { body, config, headers, params } = defaultedAxiosFetchParams(
+    responseType,
+    data,
+  );
+  return GET.bind(null, url, {
+    headers: headers,
+    params: params,
+    ...config,
+  });
 }
 
 function AxiosPOST<
@@ -82,8 +91,15 @@ function AxiosPOST<
   data: AxiosFetchDataParams<Route, Method>,
 ) {
   const POST = axiosInstance.post<ResponseBodyOf<Route, Method>>;
-  const { body, ...config } = defaultedAxiosFetchParams(responseType, data);
-  return POST.bind(null, url, body, config);
+  const { body, config, headers, params } = defaultedAxiosFetchParams(
+    responseType,
+    data,
+  );
+  return POST.bind(null, url, body, {
+    headers: headers,
+    params: params,
+    ...config,
+  });
 }
 
 function AxiosPUT<
@@ -96,8 +112,15 @@ function AxiosPUT<
   data: AxiosFetchDataParams<Route, Method>,
 ) {
   const PUT = axiosInstance.put<ResponseBodyOf<Route, Method>>;
-  const { body, ...config } = defaultedAxiosFetchParams(responseType, data);
-  return PUT.bind(null, url, body, config);
+  const { body, config, headers, params } = defaultedAxiosFetchParams(
+    responseType,
+    data,
+  );
+  return PUT.bind(null, url, body, {
+    headers: headers,
+    params: params,
+    ...config,
+  });
 }
 
 function AxiosDELETE<
@@ -110,8 +133,15 @@ function AxiosDELETE<
   data: AxiosFetchDataParams<Route, Method>,
 ) {
   const DELETE = axiosInstance.delete<ResponseBodyOf<Route, Method>>;
-  const { body, ...config } = defaultedAxiosFetchParams(responseType, data);
-  return DELETE.bind(null, url, config);
+  const { body, config, headers, params } = defaultedAxiosFetchParams(
+    responseType,
+    data,
+  );
+  return DELETE.bind(null, url, {
+    headers: headers,
+    params: params,
+    ...config,
+  });
 }
 
 function AxiosFetch<

@@ -20,7 +20,6 @@ async function validateSession(
       },
     );
     const { data } = await axios();
-
     return data.success || false;
   } catch (err) {
     console.warn("Error validating session");
@@ -72,9 +71,6 @@ const authOptions: NextAuthOptions = {
           "json",
           {
             body: { username: username, password: password },
-            config: {
-              validateStatus: (status) => status < 500,
-            },
           },
         )();
         if (data.success === true)

@@ -58,9 +58,6 @@ async function handleOnSubmit(
           username: userName,
           password: password,
         },
-        config: {
-          validateStatus: (status) => status < 500, // Resolve only if the status code is less than 500
-        },
       },
     )();
     //
